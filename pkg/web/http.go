@@ -22,31 +22,48 @@ import (
 
 	"cirello.io/bookmarkd/generated"
 	"cirello.io/bookmarkd/pkg/actions"
+	"cirello.io/bookmarkd/pkg/errors"
 	"cirello.io/bookmarkd/pkg/models"
 	"cirello.io/bookmarkd/pkg/net"
 	"cirello.io/bookmarkd/pkg/pubsub"
+	svcjwt "cirello.io/svc/jwt"
+	jwtmiddleware "github.com/auth0/go-jwt-middleware"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/websocket"
 	"github.com/jmoiron/sqlx"
 )
 
 // Server implements the web interface.
 type Server struct {
-	db     *sqlx.DB
-	router *http.ServeMux
-	pubsub *pubsub.Broker
-
-	username, password string
+	db               *sqlx.DB
+	handler          http.Handler
+	pubsub           *pubsub.Broker
+	jwtSecret        []byte
+	acceptableEmails map[string]struct{}
+	authMiddleware   *jwtmiddleware.JWTMiddleware
 }
 
 // New creates a web interface handler.
-func New(db *sqlx.DB, username, password string) (*Server, error) {
+func New(db *sqlx.DB, jwtSecret []byte, acceptableEmails []string) (*Server, error) {
 	s := &Server{
-		db:       db,
-		router:   http.NewServeMux(),
-		pubsub:   pubsub.New(),
-		username: username,
-		password: password,
+		db:        db,
+		pubsub:    pubsub.New(),
+		jwtSecret: jwtSecret,
 	}
+	s.acceptableEmails = make(map[string]struct{})
+	for _, e := range acceptableEmails {
+		s.acceptableEmails[e] = struct{}{}
+	}
+
+	s.authMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
+		UserProperty: "user",
+		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+			return s.jwtSecret, nil
+		},
+		SigningMethod: jwt.SigningMethodHS512,
+		ErrorHandler:  s.unauthorized,
+	})
+
 	err := s.registerRoutes()
 	return s, err
 }
@@ -60,12 +77,13 @@ func (s *Server) registerRoutes() error {
 	}
 	rootHandler := http.FileServer(rootFS)
 
-	s.router.HandleFunc("/state", s.state)
-	s.router.HandleFunc("/loadBookmark", s.loadBookmark)
-	s.router.HandleFunc("/newBookmark", s.newBookmark)
-	s.router.HandleFunc("/deleteBookmark", s.deleteBookmark)
-	s.router.HandleFunc("/ws", s.websocket)
-	s.router.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+	router := http.NewServeMux()
+	router.HandleFunc("/state", s.state)
+	router.HandleFunc("/loadBookmark", s.loadBookmark)
+	router.HandleFunc("/newBookmark", s.newBookmark)
+	router.HandleFunc("/deleteBookmark", s.deleteBookmark)
+	router.HandleFunc("/ws", s.websocket)
+	router.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		rootHandler.ServeHTTP(&recoverableResponseWriter{
 			responseWriter: w,
 			request:        req,
@@ -75,34 +93,43 @@ func (s *Server) registerRoutes() error {
 			},
 		}, req)
 	})
+
+	s.handler = router
 	return nil
 }
 
-func (s *Server) unauthorized(w http.ResponseWriter) {
-	w.Header().Add("WWW-Authenticate", `Basic realm="bookmarkd"`)
+func (s *Server) unauthorized(w http.ResponseWriter, r *http.Request, err string) {
+	log.Println("access denied", err)
 	w.WriteHeader(http.StatusUnauthorized)
 }
 
-func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	credsMissing := s.username == "" && s.password == ""
-	if credsMissing {
-		s.router.ServeHTTP(w, r)
-		return
+func (s *Server) authentication(w http.ResponseWriter, r *http.Request) error {
+	if err := s.authMiddleware.CheckJWT(w, r); err != nil {
+		return errors.E("cannot find JWT in the request")
 	}
-
-	username, password, ok := r.BasicAuth()
+	token, ok := r.Context().Value("user").(*jwt.Token)
 	if !ok {
-		s.unauthorized(w)
+		return errors.E("cannot find token in context")
+	}
+	claims, err := svcjwt.Claims(token)
+	if err != nil {
+		return errors.E(err, "unexpected token set")
+	}
+	if claims.Target != "bookmarkd.cirello.io" {
+		return errors.E("invalid target in token")
+	}
+	if _, ok := s.acceptableEmails[claims.Email]; !ok {
+		return errors.E("access for this account")
+	}
+	return nil
+}
+
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if err := s.authentication(w, r); err != nil {
+		s.unauthorized(w, r, err.Error())
 		return
 	}
-
-	isValid := username == s.username && password == s.password
-	if !isValid {
-		s.unauthorized(w)
-		return
-	}
-
-	s.router.ServeHTTP(w, r)
+	s.handler.ServeHTTP(w, r)
 }
 
 func (s *Server) state(w http.ResponseWriter, r *http.Request) {

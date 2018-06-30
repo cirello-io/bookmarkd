@@ -15,8 +15,11 @@
 package cli
 
 import (
+	"bufio"
+	"io/ioutil"
 	"net"
 	"net/http"
+	"os"
 
 	"cirello.io/bookmarkd/pkg/errors"
 	"cirello.io/bookmarkd/pkg/tasks"
@@ -37,12 +40,14 @@ func (c *commands) httpMode() cli.Command {
 				EnvVar: "BOOKMARKD_LISTEN",
 			},
 			cli.StringFlag{
-				Name:   "username",
-				EnvVar: "BOOKMARKD_USERNAME",
+				Name:   "ca-cert",
+				EnvVar: "BOOKMARKD_CA_CERT",
+				Value:  "ca.pem",
 			},
 			cli.StringFlag{
-				Name:   "password",
-				EnvVar: "BOOKMARKD_PASSWORD",
+				Name:   "acceptable-users-file",
+				EnvVar: "BOOKMARKD_ACCEPTABLE_USERS_FILE",
+				Value:  "bookmarkd.users",
 			},
 		},
 		Action: func(ctx *cli.Context) error {
@@ -51,14 +56,40 @@ func (c *commands) httpMode() cli.Command {
 				return errors.E(ctx, err, "cannot bind port")
 			}
 			tasks.Run(c.db)
-			username := ctx.String("username")
-			password := ctx.String("password")
-			srv, err := web.New(c.db, username, password)
+
+			caCert, err := ioutil.ReadFile(ctx.String("ca-cert"))
+			if err != nil {
+				return errors.E(ctx, err, "cannot read CA certificate file")
+			}
+
+			users, err := readUsersListFile(ctx.String("acceptable-users-file"))
 			if err != nil {
 				return errors.E(ctx, err)
 			}
+
+			srv, err := web.New(c.db, caCert, users)
+			if err != nil {
+				return errors.E(ctx, err)
+			}
+
 			err = http.Serve(l, srv)
 			return errors.E(ctx, err)
 		},
 	}
+}
+
+func readUsersListFile(fn string) ([]string, error) {
+	var users []string
+	fd, err := os.Open(fn)
+	if err != nil {
+		return users, errors.E(err, "cannot open users list file")
+	}
+	scanner := bufio.NewScanner(fd)
+	for scanner.Scan() {
+		users = append(users, scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		return users, errors.E(err, "cannot read users list")
+	}
+	return users, nil
 }

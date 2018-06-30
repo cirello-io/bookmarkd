@@ -9,6 +9,6 @@ darwin:
 	vgo build -o bookmarkd ./cmd/bookmarkd
 
 linux:
-	docker run -ti --rm -v $(PWD):/go/src/cirello.io/bookmarkd \
+	docker run -ti --rm -v $(PWD)/../:/go/src/cirello.io/ \
 		-w /go/src/cirello.io/bookmarkd golang \
 		/bin/bash -c 'go get -u golang.org/x/vgo && vgo build -o bookmarkd.linux ./cmd/bookmarkd'
