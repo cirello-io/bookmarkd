@@ -38,6 +38,7 @@ type Task struct {
 var execGroup singleflight.Group
 var tasks = []Task{
 	{"check link health", LinkHealth, 6 * time.Hour},
+	{"vacuum", Vacuum, 24 * time.Hour},
 }
 
 // Run executes background maintenance tasks.
@@ -106,4 +107,16 @@ func LinkHealth(db *sqlx.DB) (err error) {
 	wg.Wait()
 
 	return nil
+}
+
+// Vacuum executes a SQLite3 vacuum clean up.
+func Vacuum(db *sqlx.DB) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = errors.E(errors.Internal, r)
+		}
+	}()
+
+	_, err = db.Exec("VACUUM")
+	return errors.E(err, "cannot run vacuum")
 }
