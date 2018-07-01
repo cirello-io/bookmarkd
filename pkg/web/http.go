@@ -26,7 +26,7 @@ import (
 	"cirello.io/bookmarkd/pkg/models"
 	"cirello.io/bookmarkd/pkg/net"
 	"cirello.io/bookmarkd/pkg/pubsub"
-	svcjwt "cirello.io/svc/jwt"
+	svcjwt "cirello.io/svc/pkg/jwt"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/websocket"
