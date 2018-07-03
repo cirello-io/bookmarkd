@@ -1,7 +1,7 @@
 module cirello.io/bookmarkd
 
 require (
-	cirello.io/svc v0.0.0-20180630235200-387cdca561b5
+	cirello.io/svc v0.0.2
 	github.com/PuerkitoBio/goquery v1.4.1
 	github.com/andybalholm/cascadia v1.0.0
 	github.com/auth0/go-jwt-middleware v0.0.0-20170425171159-5493cabe49f7

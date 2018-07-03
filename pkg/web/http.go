@@ -15,6 +15,7 @@
 package web // import "cirello.io/bookmarkd/pkg/web"
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -103,6 +104,10 @@ func (s *Server) unauthorized(w http.ResponseWriter, r *http.Request, err string
 	w.WriteHeader(http.StatusUnauthorized)
 }
 
+type authClaims string
+
+var trustLevel = authClaims("trust-level")
+
 func (s *Server) authentication(w http.ResponseWriter, r *http.Request) error {
 	if err := s.authMiddleware.CheckJWT(w, r); err != nil {
 		return errors.E("cannot find JWT in the request")
@@ -121,6 +126,8 @@ func (s *Server) authentication(w http.ResponseWriter, r *http.Request) error {
 	if _, ok := s.acceptableEmails[claims.Email]; !ok {
 		return errors.E("access for this account")
 	}
+	*r = *r.WithContext(context.WithValue(r.Context(),
+		trustLevel, claims.Trust))
 	return nil
 }
 
@@ -194,6 +201,12 @@ func (s *Server) newBookmark(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) deleteBookmark(w http.ResponseWriter, r *http.Request) {
+	if v, ok := r.Context().Value(trustLevel).(string); !ok || v != "high" {
+		http.Error(w, http.StatusText(http.StatusUnauthorized),
+			http.StatusUnauthorized)
+		return
+	}
+
 	// TODO: handle Access-Control-Allow-Origin correctly
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
