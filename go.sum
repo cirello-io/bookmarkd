@@ -2,6 +2,9 @@ cirello.io/errors v0.0.0-20180627134428-be5b1a580252 h1:XeFaR/s8aDOfNCk8eo5nsbLf
 cirello.io/errors v0.0.0-20180627134428-be5b1a580252/go.mod h1:EGeXTbC2JZmq7lFJ3wJXj2Nw1q6oLd7VHbznWcBrN2E=
 cirello.io/svc v0.0.0-20180630235200-387cdca561b5 h1:r3IBoTLkln7nWfendOqGUS9ZXn5uS8k/s0Mikx36vPw=
 cirello.io/svc v0.0.0-20180630235200-387cdca561b5/go.mod h1:+SH5zIdQF1srIluaZI7rs+g4KQWVipKVviYl8l2oDR4=
+cirello.io/svc v0.0.0-20180705112706-da9f0f447a5a h1:vKftFz5yGibLFEA7TadMqDDVC1XRVD10tOuMBinJpyM=
+cirello.io/svc v0.0.0-20180705112706-da9f0f447a5a/go.mod h1:+SH5zIdQF1srIluaZI7rs+g4KQWVipKVviYl8l2oDR4=
+cirello.io/svc v0.0.0-20180708014236-da9f0f447a5a/go.mod h1:+SH5zIdQF1srIluaZI7rs+g4KQWVipKVviYl8l2oDR4=
 cirello.io/svc v0.0.2 h1:OMgmhCRVwNdYI9+7sgn42X2sjqRigCc+HZWvvN1+Xq4=
 cirello.io/svc v0.0.2/go.mod h1:+SH5zIdQF1srIluaZI7rs+g4KQWVipKVviYl8l2oDR4=
 github.com/PuerkitoBio/goquery v1.4.1 h1:smcIRGdYm/w7JSbcdeLHEMzxmsBQvl8lhf0dSw2nzMI=
