@@ -1,8 +1,8 @@
 all: assets darwin
 
 assets:
-	cd frontend; npm run build;
-	go-bindata-assetfs -pkg generated frontend/build/...
+	cd frontend; npm install; npm run build;
+	go-bindata-assetfs -o bindata_assetfs.go -pkg generated frontend/build/...
 	mv bindata_assetfs.go generated
 
 darwin:
