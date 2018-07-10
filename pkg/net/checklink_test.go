@@ -57,6 +57,7 @@ func TestCheckLink(t *testing.T) {
 				LastStatusCode:   200,
 				LastStatusReason: "OK",
 				LastStatusCheck:  now().Unix(),
+				Title:            "Example Domain",
 			},
 		},
 		{
@@ -75,7 +76,7 @@ func TestCheckLink(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := CheckLink(tt.args.bookmark); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("CheckLink() = %v, want %v", got, tt.want)
+				t.Errorf("%s CheckLink() = %v, want %v", tt.name, got, tt.want)
 			}
 		})
 	}
