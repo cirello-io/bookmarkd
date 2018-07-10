@@ -13,3 +13,7 @@ linux:
 	docker run -ti --rm -v $(PWD)/../:/go/src/cirello.io/ \
 		-w /go/src/cirello.io/bookmarkd golang \
 		/bin/bash -c 'go get -u golang.org/x/vgo && vgo build -o bookmarkd.linux ./cmd/bookmarkd'
+
+test:
+	go get -u golang.org/x/vgo
+	vgo test -v cirello.io/bookmarkd/...
