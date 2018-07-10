@@ -12,6 +12,7 @@
 package generated
 
 import (
+	"github.com/elazarl/go-bindata-assetfs"
 	"bytes"
 	"compress/gzip"
 	"fmt"
@@ -89,7 +90,7 @@ func frontendBuildAssetManifestJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "frontend/build/asset-manifest.json", size: 196, mode: os.FileMode(420), modTime: time.Unix(1531184995, 0)}
+	info := bindataFileInfo{name: "frontend/build/asset-manifest.json", size: 196, mode: os.FileMode(420), modTime: time.Unix(1531186163, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -109,7 +110,7 @@ func frontendBuildIndexHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "frontend/build/index.html", size: 805, mode: os.FileMode(420), modTime: time.Unix(1531184995, 0)}
+	info := bindataFileInfo{name: "frontend/build/index.html", size: 805, mode: os.FileMode(420), modTime: time.Unix(1531186163, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -129,7 +130,7 @@ func frontendBuildServiceWorkerJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "frontend/build/service-worker.js", size: 3164, mode: os.FileMode(420), modTime: time.Unix(1531184995, 0)}
+	info := bindataFileInfo{name: "frontend/build/service-worker.js", size: 3164, mode: os.FileMode(420), modTime: time.Unix(1531186164, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -149,7 +150,7 @@ func frontendBuildStaticCssMain978f269cCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "frontend/build/static/css/main.978f269c.css", size: 4553, mode: os.FileMode(420), modTime: time.Unix(1531184995, 0)}
+	info := bindataFileInfo{name: "frontend/build/static/css/main.978f269c.css", size: 4553, mode: os.FileMode(420), modTime: time.Unix(1531186163, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -169,7 +170,7 @@ func frontendBuildStaticCssMain978f269cCssMap() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "frontend/build/static/css/main.978f269c.css.map", size: 16846, mode: os.FileMode(420), modTime: time.Unix(1531184995, 0)}
+	info := bindataFileInfo{name: "frontend/build/static/css/main.978f269c.css.map", size: 16846, mode: os.FileMode(420), modTime: time.Unix(1531186163, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -189,7 +190,7 @@ func frontendBuildStaticJsMainA790b55aJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "frontend/build/static/js/main.a790b55a.js", size: 456094, mode: os.FileMode(420), modTime: time.Unix(1531184995, 0)}
+	info := bindataFileInfo{name: "frontend/build/static/js/main.a790b55a.js", size: 456094, mode: os.FileMode(420), modTime: time.Unix(1531186163, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -209,7 +210,7 @@ func frontendBuildStaticJsMainA790b55aJsMap() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "frontend/build/static/js/main.a790b55a.js.map", size: 3269107, mode: os.FileMode(420), modTime: time.Unix(1531184995, 0)}
+	info := bindataFileInfo{name: "frontend/build/static/js/main.a790b55a.js.map", size: 3269107, mode: os.FileMode(420), modTime: time.Unix(1531186163, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -381,3 +382,13 @@ func _filePath(dir, name string) string {
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
 
+
+func assetFS() *assetfs.AssetFS {
+	assetInfo := func(path string) (os.FileInfo, error) {
+		return os.Stat(path)
+	}
+	for k := range _bintree.Children {
+		return &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: assetInfo, Prefix: k}
+	}
+	panic("unreachable")
+}

@@ -4,7 +4,6 @@ assets:
 	cd frontend; npm install; npm run build;
 	go-bindata-assetfs -o bindata_assetfs.go -pkg generated frontend/build/...
 	mv bindata_assetfs.go generated
-	rm -f generated_placeholder.go
 
 darwin:
 	vgo build -o bookmarkd ./cmd/bookmarkd
