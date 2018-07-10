@@ -17,6 +17,7 @@ package cli
 import (
 	"bufio"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"os"
@@ -59,12 +60,12 @@ func (c *commands) httpMode() cli.Command {
 
 			caCert, err := ioutil.ReadFile(ctx.String("ca-cert"))
 			if err != nil {
-				return errors.E(ctx, err, "cannot read CA certificate file")
+				log.Println("skipping CA file:", err)
 			}
 
 			users, err := readUsersListFile(ctx.String("acceptable-users-file"))
 			if err != nil {
-				return errors.E(ctx, err)
+				log.Println("skipping users list file:", err)
 			}
 
 			srv, err := web.New(c.db, caCert, users)

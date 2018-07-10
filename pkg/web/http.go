@@ -56,14 +56,16 @@ func New(db *sqlx.DB, jwtSecret []byte, acceptableEmails []string) (*Server, err
 		s.acceptableEmails[e] = struct{}{}
 	}
 
-	s.authMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
-		UserProperty: "user",
-		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-			return s.jwtSecret, nil
-		},
-		SigningMethod: jwt.SigningMethodHS512,
-		ErrorHandler:  s.unauthorized,
-	})
+	if len(jwtSecret) > 0 {
+		s.authMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
+			UserProperty: "user",
+			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+				return s.jwtSecret, nil
+			},
+			SigningMethod: jwt.SigningMethodHS512,
+			ErrorHandler:  s.unauthorized,
+		})
+	}
 
 	err := s.registerRoutes()
 	return s, err
@@ -109,6 +111,9 @@ type authClaims string
 var trustLevel = authClaims("trust-level")
 
 func (s *Server) authentication(w http.ResponseWriter, r *http.Request) error {
+	if s.authMiddleware == nil {
+		return nil
+	}
 	if err := s.authMiddleware.CheckJWT(w, r); err != nil {
 		return errors.E("cannot find JWT in the request")
 	}
