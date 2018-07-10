@@ -1,4 +1,5 @@
 generated/bindata_assetfs.go
+generated/generated_placeholder.go
 bookmarkd
 bookmarkd.linux
 bookmarks.db
