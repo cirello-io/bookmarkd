@@ -98,8 +98,6 @@ func (b *bookmarkDAO) All() ([]*Bookmark, error) {
 
 		ORDER BY
 			created_at DESC, id DESC
-			-- replace(replace(url, 'https://', 'http://'), 'www.', '')
-
 	`)
 
 	for _, b := range bookmarks {
