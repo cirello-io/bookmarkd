@@ -137,6 +137,7 @@ export class HomePage extends React.PureComponent {
                   <div>{v.title.trim() !== '' ? v.title.trim() : v.url}</div>
                   <div className='link-card-title-url'>
                     {v.host} - {moment(v.created_at).fromNow()}
+                    {v.last_status_code !== 200 ? [' ', <Label bsStyle='info'>{v.last_status_code}</Label>] : ''}
                   </div>
                 </div>
               </Col>

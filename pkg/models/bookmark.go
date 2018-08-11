@@ -93,11 +93,10 @@ func (b *bookmarkDAO) All() ([]*Bookmark, error) {
 		FROM
 			bookmarks
 
-		WHERE
-			last_status_code = 200
-
 		ORDER BY
-			created_at DESC, id DESC
+			last_status_code ASC,
+			created_at DESC,
+			id DESC
 	`)
 
 	for _, b := range bookmarks {
