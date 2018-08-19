@@ -14,5 +14,4 @@ linux:
 		/bin/bash -c 'go get -u golang.org/x/vgo && vgo build -o bookmarkd.linux ./cmd/bookmarkd'
 
 test:
-	go get -u golang.org/x/vgo
-	vgo test -v ./...
+	GO111MODULE=on go test -v ./...
