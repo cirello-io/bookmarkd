@@ -11,7 +11,7 @@ darwin:
 linux:
 	docker run -ti --rm -v $(PWD)/../:/go/src/cirello.io/ \
 		-w /go/src/cirello.io/bookmarkd golang \
-		/bin/bash -c 'go get -u golang.org/x/ &&  build -o bookmarkd.linux ./cmd/bookmarkd'
+		/bin/bash -c 'go build -o bookmarkd.linux ./cmd/bookmarkd'
 
 test:
 	GO111MODULE=on go test -v ./...
