@@ -94,7 +94,10 @@ func (b *bookmarkDAO) All() ([]*Bookmark, error) {
 			bookmarks
 
 		ORDER BY
-			last_status_code ASC,
+			CASE
+				WHEN last_status_code = 0 THEN 999
+				ELSE last_status_code
+			END ASC,
 			created_at DESC,
 			id DESC
 	`)
