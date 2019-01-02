@@ -23,10 +23,10 @@ import (
 
 	"cirello.io/bookmarkd/generated"
 	"cirello.io/bookmarkd/pkg/actions"
-	"cirello.io/bookmarkd/pkg/errors"
 	"cirello.io/bookmarkd/pkg/models"
 	"cirello.io/bookmarkd/pkg/net"
 	"cirello.io/bookmarkd/pkg/pubsub"
+	"cirello.io/errors"
 	svcjwt "cirello.io/svc/pkg/jwt"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"

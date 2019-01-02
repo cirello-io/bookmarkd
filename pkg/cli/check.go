@@ -16,7 +16,7 @@ package cli
 
 import (
 	"cirello.io/bookmarkd/pkg/actions"
-	"cirello.io/bookmarkd/pkg/errors"
+	"cirello.io/errors"
 	"gopkg.in/urfave/cli.v1"
 )
 

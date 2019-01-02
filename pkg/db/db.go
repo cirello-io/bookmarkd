@@ -15,7 +15,7 @@
 package db // import "cirello.io/bookmarkd/pkg/db"
 
 import (
-	"cirello.io/bookmarkd/pkg/errors"
+	"cirello.io/errors"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3" // SQLite3 driver
 )

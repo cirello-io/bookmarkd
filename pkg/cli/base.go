@@ -20,7 +20,7 @@ import (
 	"sort"
 	"strings"
 
-	"cirello.io/bookmarkd/pkg/errors"
+	"cirello.io/errors"
 	"cirello.io/bookmarkd/pkg/models"
 	"github.com/jmoiron/sqlx"
 	"gopkg.in/urfave/cli.v1"

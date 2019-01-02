@@ -15,8 +15,8 @@
 package actions
 
 import (
-	"cirello.io/bookmarkd/pkg/errors"
 	"cirello.io/bookmarkd/pkg/models"
+	"cirello.io/errors"
 	"github.com/jmoiron/sqlx"
 )
 

@@ -22,7 +22,7 @@ import (
 	"net/http"
 	"os"
 
-	"cirello.io/bookmarkd/pkg/errors"
+	"cirello.io/errors"
 	"cirello.io/bookmarkd/pkg/tasks"
 	"cirello.io/bookmarkd/pkg/web"
 	"gopkg.in/urfave/cli.v1"

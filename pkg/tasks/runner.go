@@ -20,9 +20,9 @@ import (
 	"sync"
 	"time"
 
-	"cirello.io/bookmarkd/pkg/errors"
 	"cirello.io/bookmarkd/pkg/models"
 	"cirello.io/bookmarkd/pkg/net"
+	"cirello.io/errors"
 	"github.com/jmoiron/sqlx"
 	"golang.org/x/sync/singleflight"
 )
