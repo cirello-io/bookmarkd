@@ -1,5 +1,6 @@
-# cirello.io v1.1.4
+# cirello.io v1.3.0
 cirello.io/svc/pkg/jwt
+# cirello.io/errors v0.0.0-20190102181731-de05bb75b36f
 cirello.io/errors
 # github.com/PuerkitoBio/goquery v1.4.1
 github.com/PuerkitoBio/goquery
@@ -18,7 +19,7 @@ github.com/jmoiron/sqlx
 github.com/jmoiron/sqlx/reflectx
 # github.com/mattn/go-sqlite3 v1.9.0
 github.com/mattn/go-sqlite3
-# golang.org/x/net v0.0.0-20180706051357-32a936f46389
+# golang.org/x/net v0.0.0-20181220203305-927f97764cc3
 golang.org/x/net/html
 golang.org/x/net/html/atom
 # golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f

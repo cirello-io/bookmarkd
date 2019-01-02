@@ -462,3 +462,22 @@ func RootCause(err error) error {
 
 	return RootCause(e.Err)
 }
+
+// Wrapf wraps the given error with a formatted comment.
+func Wrapf(err error, msg string, args ...interface{}) error {
+	if err == nil {
+		return nil
+	}
+
+	return E(err, Op(fmt.Sprintf(msg, args...)))
+}
+
+// Trap can take any function whose last returned value is an error, and return
+// it exclusively.
+func Trap(values ...interface{}) error {
+	v := values[len(values)-1]
+	if err, ok := v.(error); ok {
+		return err
+	}
+	return nil
+}
