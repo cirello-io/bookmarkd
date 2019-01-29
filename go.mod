@@ -1,8 +1,8 @@
 module cirello.io/bookmarkd
 
 require (
-	cirello.io v1.3.0
-	cirello.io/errors v0.0.0-20190102181731-de05bb75b36f
+	cirello.io/errors v1.0.0
+	cirello.io/svc v0.0.0-20190102181731-2414c48a9a74
 	github.com/PuerkitoBio/goquery v1.4.1
 	github.com/andybalholm/cascadia v1.0.0 // indirect
 	github.com/auth0/go-jwt-middleware v0.0.0-20170425171159-5493cabe49f7
