@@ -144,6 +144,10 @@ export class HomePage extends React.PureComponent {
             </Row>
             <Row>
               <Col>
+                {v.inbox
+                ? <div className='link-card-button-open'> <Glyphicon glyph='inbox' /> </div>
+                : <span />
+                }
                 <div
                   className='link-card-button-open'
                   onClick={() => window.open(v.url, '_blank')}
