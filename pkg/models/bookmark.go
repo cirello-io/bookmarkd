@@ -31,6 +31,7 @@ type Bookmark struct {
 	LastStatusReason string    `db:"last_status_reason" json:"last_status_reason"`
 	Title            string    `db:"title" json:"title"`
 	CreatedAt        time.Time `db:"created_at" json:"created_at"`
+	Inbox            time.Time `db:"inbox" json:"inbox"`
 
 	Host string `db:"-" json:"host"`
 }
@@ -65,12 +66,14 @@ func (b *bookmarkDAO) Bootstrap() error {
 			last_status_check int,
 			last_status_reason text,
 			title bigtext not null,
-			created_at datetime not null
+			created_at datetime not null,
+			inbox bool not null default false
 		);
 		`,
 		`create index if not exists bookmarks_last_status_code  on bookmarks (last_status_code)`,
 		`create index if not exists bookmarks_last_status_check on bookmarks (last_status_check)`,
 		`create index if not exists bookmarks_created_at on bookmarks (created_at)`,
+		`create index if not exists bookmarks_inbox on bookmarks (inbox)`,
 	}
 
 	for _, cmd := range cmds {
@@ -162,9 +165,9 @@ func (b *bookmarkDAO) Insert(bookmark *Bookmark) (*Bookmark, error) {
 	bookmark.CreatedAt = time.Now()
 	_, err := b.db.NamedExec(`
 		INSERT INTO bookmarks
-		(url, last_status_code, last_status_check, last_status_reason, title, created_at)
+		(url, last_status_code, last_status_check, last_status_reason, title, created_at, inbox)
 		VALUES
-		(:url, :last_status_code, :last_status_check, :last_status_reason, :title, :created_at)
+		(:url, :last_status_code, :last_status_check, :last_status_reason, :title, :created_at, :inbox)
 	`, bookmark)
 	if err != nil {
 		return nil, errors.E(err)
@@ -197,7 +200,8 @@ func (b *bookmarkDAO) Update(bookmark *Bookmark) error {
 			last_status_code = :last_status_code,
 			last_status_check = :last_status_check,
 			last_status_reason = :last_status_reason,
-			title = :title
+			title = :title,
+			inbox = :inbox
 		WHERE
 			id = :id
 	`, bookmark)
