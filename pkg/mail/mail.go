@@ -115,10 +115,16 @@ func (u *user) extractLink(r io.Reader) {
 				log.Println("cannot find link:", err)
 				return
 			}
+			dec := new(mime.WordDecoder)
+			title, err := dec.DecodeHeader(m.Header.Get("subject"))
+			if err != nil {
+				log.Println("cannot parse email subject:", err)
+				return
+			}
 			bookmarkDAO := models.NewBookmarkDAO(u.backend.db)
 			if _, err := bookmarkDAO.Insert(&models.Bookmark{
 				URL:   urls[0],
-				Title: m.Header.Get("subject"),
+				Title: title,
 				Inbox: 1,
 			}); err != nil {
 				log.Println("cannot store new link:", err)
