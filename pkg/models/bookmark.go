@@ -38,13 +38,14 @@ type Bookmark struct {
 
 // BookmarkDAO provides DB persistence to bookmarks.
 type BookmarkDAO interface {
-	Bootstrap() error
 	All() ([]*Bookmark, error)
-	Expired() ([]*Bookmark, error)
-	Invalid() ([]*Bookmark, error)
-	Insert(*Bookmark) (*Bookmark, error)
-	Update(*Bookmark) error
+	Bootstrap() error
 	Delete(*Bookmark) error
+	Expired() ([]*Bookmark, error)
+	GetByID(id int64) (*Bookmark, error)
+	Insert(*Bookmark) (*Bookmark, error)
+	Invalid() ([]*Bookmark, error)
+	Update(*Bookmark) error
 }
 
 type bookmarkDAO struct {
@@ -186,6 +187,27 @@ func (b *bookmarkDAO) Insert(bookmark *Bookmark) (*Bookmark, error) {
 	`, id)
 	if err != nil {
 		return nil, errors.E(err, "cannot reload inserted row")
+	}
+	u, err := url.Parse(bookmark.URL)
+	if err == nil {
+		bookmark.Host = u.Host
+	}
+	return bookmark, errors.E(err, "cannot parse URL")
+}
+
+// GetByID loads one bookmark.
+func (b *bookmarkDAO) GetByID(id int64) (*Bookmark, error) {
+	bookmark := &Bookmark{}
+	err := b.db.Get(bookmark, `
+	SELECT
+		*
+	FROM
+		bookmarks
+	WHERE
+		id = $1
+	`, id)
+	if err != nil {
+		return nil, errors.E(err, "cannot find row")
 	}
 	u, err := url.Parse(bookmark.URL)
 	if err == nil {

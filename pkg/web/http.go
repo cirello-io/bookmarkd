@@ -85,6 +85,7 @@ func (s *Server) registerRoutes() error {
 	router.HandleFunc("/loadBookmark", s.loadBookmark)
 	router.HandleFunc("/newBookmark", s.newBookmark)
 	router.HandleFunc("/deleteBookmark", s.deleteBookmark)
+	router.HandleFunc("/markBookmarkAsRead", s.markBookmarkAsRead)
 	router.HandleFunc("/ws", s.websocket)
 	router.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		rootHandler.ServeHTTP(&recoverableResponseWriter{
@@ -230,6 +231,30 @@ func (s *Server) deleteBookmark(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Write([]byte("{}"))
+}
+
+func (s *Server) markBookmarkAsRead(w http.ResponseWriter, r *http.Request) {
+	if v, ok := r.Context().Value(trustLevel).(string); !ok || v != "high" {
+		http.Error(w, http.StatusText(http.StatusUnauthorized),
+			http.StatusUnauthorized)
+		return
+	}
+	// TODO: handle Access-Control-Allow-Origin correctly
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	bookmark := &models.Bookmark{}
+	if err := json.NewDecoder(r.Body).Decode(bookmark); err != nil {
+		log.Println("cannot unmarshal bookmark request:", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError),
+			http.StatusInternalServerError)
+		return
+	}
+	if err := actions.MarkBookmarkAsRead(s.db, bookmark.ID, s.pubsub.Broadcast); err != nil {
+		log.Println("cannot mark bookmark as read:", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError),
+			http.StatusInternalServerError)
+		return
+	}
 	w.Write([]byte("{}"))
 }
 
