@@ -25,6 +25,7 @@ import (
 	"net"
 	"net/mail"
 	"strings"
+	"time"
 
 	"cirello.io/bookmarkd/pkg/models"
 	smtp "github.com/emersion/go-smtp"
@@ -123,9 +124,11 @@ func (u *user) extractLink(r io.Reader) {
 			}
 			bookmarkDAO := models.NewBookmarkDAO(u.backend.db)
 			if _, err := bookmarkDAO.Insert(&models.Bookmark{
-				URL:   urls[0],
-				Title: title,
-				Inbox: 1,
+				URL:             urls[0],
+				Title:           title,
+				Inbox:           1,
+				LastStatusCode:  200,
+				LastStatusCheck: time.Now().Unix(),
 			}); err != nil {
 				log.Println("cannot store new link:", err)
 			}
