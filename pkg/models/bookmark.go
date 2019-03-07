@@ -163,32 +163,35 @@ func (b *bookmarkDAO) Invalid() ([]*Bookmark, error) {
 // Insert one bookmark.
 func (b *bookmarkDAO) Insert(bookmark *Bookmark) (*Bookmark, error) {
 	bookmark.CreatedAt = time.Now()
-	_, err := b.db.NamedExec(`
+	result, err := b.db.NamedExec(`
 		INSERT INTO bookmarks
 		(url, last_status_code, last_status_check, last_status_reason, title, created_at, inbox)
 		VALUES
 		(:url, :last_status_code, :last_status_check, :last_status_reason, :title, :created_at, :inbox)
 	`, bookmark)
 	if err != nil {
-		return nil, errors.E(err)
+		return nil, errors.E(err, "cannot insert row")
 	}
-
+	id, err := result.LastInsertId()
+	if err != nil {
+		return nil, errors.E(err, "cannot load last inserted ID")
+	}
 	err = b.db.Get(bookmark, `
 		SELECT
 			*
 		FROM
 			bookmarks
 		WHERE
-			id = last_insert_rowid()
-	`)
+			id = $1
+	`, id)
 	if err != nil {
-		return nil, errors.E(err)
+		return nil, errors.E(err, "cannot reload inserted row")
 	}
 	u, err := url.Parse(bookmark.URL)
 	if err == nil {
 		bookmark.Host = u.Host
 	}
-	return bookmark, errors.E(err)
+	return bookmark, errors.E(err, "cannot parse URL")
 }
 
 // Update one bookmark.
