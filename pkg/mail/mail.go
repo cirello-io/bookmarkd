@@ -84,10 +84,8 @@ func (u *user) extractLink(r io.Reader) {
 			return
 		}
 		urls := xurls.Strict().FindAllString(string(body), -1)
-		if len(urls) != 1 {
+		if len(urls) == 0 {
 			log.Println("cannot find link:", err)
-			log.Println("body")
-			log.Println(string(body))
 			return
 		}
 		bookmarkDAO := models.NewBookmarkDAO(u.backend.db)
