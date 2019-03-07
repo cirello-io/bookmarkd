@@ -9,6 +9,7 @@ require (
 	github.com/codegangsta/negroni v0.3.0 // indirect
 	github.com/dgrijalva/jwt-go v0.0.0-20180309000000-06ea1031745c
 	github.com/elazarl/go-bindata-assetfs v1.0.0
+	github.com/emersion/go-smtp v0.9.0
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2 // indirect
 	github.com/gorilla/websocket v1.2.0
@@ -17,4 +18,5 @@ require (
 	golang.org/x/net v0.0.0-20181220203305-927f97764cc3 // indirect
 	golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f
 	gopkg.in/urfave/cli.v1 v1.20.0
+	mvdan.cc/xurls/v2 v2.0.0
 )

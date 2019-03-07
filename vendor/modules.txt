@@ -1,7 +1,7 @@
-# cirello.io v1.3.0
-cirello.io/svc/pkg/jwt
-# cirello.io/errors v0.0.0-20190102181731-de05bb75b36f
+# cirello.io/errors v1.0.0
 cirello.io/errors
+# cirello.io/svc v0.0.0-20190102181731-2414c48a9a74
+cirello.io/svc/pkg/jwt
 # github.com/PuerkitoBio/goquery v1.4.1
 github.com/PuerkitoBio/goquery
 # github.com/andybalholm/cascadia v1.0.0
@@ -12,6 +12,10 @@ github.com/auth0/go-jwt-middleware
 github.com/dgrijalva/jwt-go
 # github.com/elazarl/go-bindata-assetfs v1.0.0
 github.com/elazarl/go-bindata-assetfs
+# github.com/emersion/go-sasl v0.0.0-20161116183048-7e096a0a6197
+github.com/emersion/go-sasl
+# github.com/emersion/go-smtp v0.9.0
+github.com/emersion/go-smtp
 # github.com/gorilla/websocket v1.2.0
 github.com/gorilla/websocket
 # github.com/jmoiron/sqlx v0.0.0-20180614180643-0dae4fefe7c0
@@ -26,3 +30,5 @@ golang.org/x/net/html/atom
 golang.org/x/sync/singleflight
 # gopkg.in/urfave/cli.v1 v1.20.0
 gopkg.in/urfave/cli.v1
+# mvdan.cc/xurls/v2 v2.0.0
+mvdan.cc/xurls/v2
