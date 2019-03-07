@@ -98,16 +98,16 @@ func (u *user) extractLink(r io.Reader) {
 			if err == io.EOF {
 				return
 			} else if err != nil {
-				log.Println("cannot parse part of message:", err)
+				log.Println("cannot parse part of the message:", err)
 				return
 			}
-			if contentType := p.Header.Get("Content-Type"); !strings.HasPrefix(contentType, "text/html") {
-				log.Println("cannot skipt part of message:", contentType)
-				return
+			if contentType := p.Header.Get("Content-Type"); !strings.HasPrefix(contentType, "text/plain") {
+				log.Println("skipped part of the message:", contentType)
+				continue
 			}
 			body, err := ioutil.ReadAll(p)
 			if err != nil {
-				log.Println("cannot read body of the part:", err)
+				log.Println("cannot read body of the part of the message:", err)
 				return
 			}
 			urls := xurls.Strict().FindAllString(string(body), -1)
