@@ -111,7 +111,7 @@ func Run(l net.Listener, db *sqlx.DB, domain, sender, recipient string) {
 	s.Addr = l.Addr().String()
 	s.Domain = domain
 	s.MaxIdleSeconds = 300
-	s.MaxMessageBytes = 2 * 1024
+	s.MaxMessageBytes = 2 * 1024 * 1024
 	s.MaxRecipients = 1
 	s.AllowInsecureAuth = true
 	go func() {
