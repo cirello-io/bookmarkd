@@ -27,7 +27,7 @@ import {
   ToggleButton,
   ToggleButtonGroup
 } from 'react-bootstrap'
-import { initialDataload, deleteBookmark } from './actions'
+import { initialDataload, deleteBookmark, markBookmarkAsRead } from './actions'
 import moment from 'moment'
 
 import './style.css'
@@ -86,6 +86,11 @@ export class HomePage extends React.PureComponent {
     this.setState({ viewMode: mode })
   }
 
+  markAsRead (e, id) {
+    e.preventDefault()
+    this.props.markBookmarkAsRead(id)
+  }
+
   render () {
     if (!this.props.bookmarks.loaded) {
       return (
@@ -126,9 +131,10 @@ export class HomePage extends React.PureComponent {
       })
     }
 
+    var inbox = []
     var listing = []
     if (this.state.viewMode === 0) {
-      listing = bookmarks.map(v => (
+      const card = v => (
         <Panel key={v.id} className='link-card'>
           <Grid fluid>
             <Row onClick={() => window.open(v.url, '_blank')}>
@@ -169,10 +175,15 @@ export class HomePage extends React.PureComponent {
                     </span>
                   ) : (
                     <span>
-                      <Glyphicon
+                      { !v.inbox
+                      ? <Glyphicon
                         glyph='volume-off'
                         onClick={e => this.hide(e, v.id)}
                       />
+                      : <Glyphicon
+                        glyph='eye-open'
+                        onClick={e => this.markAsRead(e, v.id)}
+                      />}
                       &nbsp;&nbsp;
                       <Glyphicon
                         glyph='remove'
@@ -185,7 +196,9 @@ export class HomePage extends React.PureComponent {
             </Row>
           </Grid>
         </Panel>
-      ))
+      )
+      listing = bookmarks.filter((v) => !v.inbox).map(card)
+      inbox = bookmarks.filter((v) => v.inbox).map(card)
     } else if (this.state.viewMode === 1) {
       var stripHost = host =>
         host
@@ -314,6 +327,9 @@ export class HomePage extends React.PureComponent {
             </FormGroup>
           </Col>
         </Row>
+        {this.props.bookmarks.loaded && inbox.length > 0
+        ? [ <Row> <Col className='inbox-title'>inbox</Col> </Row>, <Row> <Col>{inbox}</Col> </Row>, <Row> <Col className='inbox-footer'><hr /></Col> </Row> ]
+        : ''}
         <Row>
           <Col>{this.props.bookmarks.loaded ? listing : ''}</Col>
         </Row>
@@ -332,7 +348,8 @@ function d2p (dispatch) {
   return bindActionCreators(
     {
       initialDataload,
-      deleteBookmark
+      deleteBookmark,
+      markBookmarkAsRead
     },
     dispatch
   )

@@ -40,6 +40,19 @@ function reducer (state = initialState, action) {
         bookmarks
       }
     }
+    case 'BOOKMARK_UPDATED': {
+      var bookmarks = state.bookmarks.slice().map((v) => {
+        if (v.id === action.bookmark.id) {
+          return action.bookmark
+        }
+        return v
+      })
+      return {
+        ...state,
+        bookmark: action.bookmark,
+        bookmarks
+      }
+    }
     case 'BOOKMARK_DELETED': {
       return {
         ...state,

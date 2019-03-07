@@ -96,3 +96,13 @@
 .link-list .link-list-secondary-container {
   padding-top: 5px;
 }
+
+.inbox-title {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.inbox-footer {
+  padding-bottom: 20px;
+}

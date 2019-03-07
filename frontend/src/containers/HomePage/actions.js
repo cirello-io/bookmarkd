@@ -47,3 +47,17 @@ export function deleteBookmark (id) {
     })
   }
 }
+
+export function markBookmarkAsRead (id) {
+  return (dispatch) => {
+    fetch(cfg.http + '/markBookmarkAsRead', {
+      method: 'POST',
+      body: JSON.stringify({ id }),
+      credentials: 'same-origin'
+    })
+    .then(res => res.json())
+    .catch((e) => {
+      console.log('cannot mark bookmark as read:', e)
+    })
+  }
+}
