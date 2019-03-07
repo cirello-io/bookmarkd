@@ -134,7 +134,9 @@ export class HomePage extends React.PureComponent {
             <Row onClick={() => window.open(v.url, '_blank')}>
               <Col>
                 <div className='link-card-title'>
-                  <div>{v.title.trim() !== '' ? v.title.trim() : v.url}</div>
+                  <div>
+                    {v.inbox ? <span><Glyphicon glyph='inbox' />&nbsp;</span> : <span />}{v.title.trim() !== '' ? v.title.trim() : v.url}
+                  </div>
                   <div className='link-card-title-url'>
                     {v.host} - {moment(v.created_at).fromNow()}
                     {v.last_status_code !== 200 ? [' ', <Label bsStyle='info'>{v.last_status_code}</Label>] : ''}
@@ -144,10 +146,6 @@ export class HomePage extends React.PureComponent {
             </Row>
             <Row>
               <Col>
-                {v.inbox
-                ? <div className='link-card-button-open'> <Glyphicon glyph='inbox' /> </div>
-                : <span />
-                }
                 <div
                   className='link-card-button-open'
                   onClick={() => window.open(v.url, '_blank')}
