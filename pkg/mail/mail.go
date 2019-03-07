@@ -20,8 +20,11 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"mime"
+	"mime/multipart"
 	"net"
 	"net/mail"
+	"strings"
 
 	"cirello.io/bookmarkd/pkg/models"
 	smtp "github.com/emersion/go-smtp"
@@ -78,25 +81,50 @@ func (u *user) extractLink(r io.Reader) {
 		return
 	}
 	go func() {
-		body, err := ioutil.ReadAll(m.Body)
+		log.Println("extractLink start")
+		defer log.Println("extractLink done")
+		mediaType, params, err := mime.ParseMediaType(m.Header.Get("Content-Type"))
 		if err != nil {
-			log.Println("cannot read body:", err)
+			log.Println("cannot load content-type:", err)
 			return
 		}
-		urls := xurls.Strict().FindAllString(string(body), -1)
-		if len(urls) == 0 {
-			log.Println("cannot find link:", err)
+		if !strings.HasPrefix(mediaType, "multipart/") {
+			log.Println("not a multipart message")
 			return
 		}
-		bookmarkDAO := models.NewBookmarkDAO(u.backend.db)
-		if _, err := bookmarkDAO.Insert(&models.Bookmark{
-			URL:   urls[0],
-			Title: m.Header.Get("subject"),
-			Inbox: 1,
-		}); err != nil {
-			log.Println("cannot store new link:", err)
+		mr := multipart.NewReader(m.Body, params["boundary"])
+		for {
+			p, err := mr.NextPart()
+			if err == io.EOF {
+				return
+			} else if err != nil {
+				log.Println("cannot parse part of message:", err)
+				return
+			}
+			if contentType := p.Header.Get("Content-Type"); !strings.HasPrefix(contentType, "text/html") {
+				log.Println("cannot skipt part of message:", contentType)
+				return
+			}
+			body, err := ioutil.ReadAll(p)
+			if err != nil {
+				log.Println("cannot read body of the part:", err)
+				return
+			}
+			urls := xurls.Strict().FindAllString(string(body), -1)
+			if len(urls) == 0 {
+				log.Println("cannot find link:", err)
+				return
+			}
+			bookmarkDAO := models.NewBookmarkDAO(u.backend.db)
+			if _, err := bookmarkDAO.Insert(&models.Bookmark{
+				URL:   urls[0],
+				Title: m.Header.Get("subject"),
+				Inbox: 1,
+			}); err != nil {
+				log.Println("cannot store new link:", err)
+			}
+			log.Println("added:", urls[0])
 		}
-		log.Println("added:", urls[0])
 	}()
 }
 
