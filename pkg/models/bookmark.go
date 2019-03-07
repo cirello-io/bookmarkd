@@ -31,7 +31,7 @@ type Bookmark struct {
 	LastStatusReason string    `db:"last_status_reason" json:"last_status_reason"`
 	Title            string    `db:"title" json:"title"`
 	CreatedAt        time.Time `db:"created_at" json:"created_at"`
-	Inbox            time.Time `db:"inbox" json:"inbox"`
+	Inbox            int64     `db:"inbox" json:"inbox"`
 
 	Host string `db:"-" json:"host"`
 }
