@@ -96,6 +96,7 @@ func (u *user) extractLink(r io.Reader) {
 		}); err != nil {
 			log.Println("cannot store new link:", err)
 		}
+		log.Println("added:", urls[0])
 	}()
 }
 
