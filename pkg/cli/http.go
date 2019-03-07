@@ -22,9 +22,10 @@ import (
 	"net/http"
 	"os"
 
-	"cirello.io/errors"
+	"cirello.io/bookmarkd/pkg/mail"
 	"cirello.io/bookmarkd/pkg/tasks"
 	"cirello.io/bookmarkd/pkg/web"
+	"cirello.io/errors"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -41,6 +42,26 @@ func (c *commands) httpMode() cli.Command {
 				EnvVar: "BOOKMARKD_LISTEN",
 			},
 			cli.StringFlag{
+				Name:   "mx-bind",
+				Value:  ":25",
+				EnvVar: "BOOKMARKD_MX_LISTEN",
+			},
+			cli.StringFlag{
+				Name:   "mx-domain",
+				Value:  "localhost",
+				EnvVar: "BOOKMARKD_MX_DOMAIN",
+			},
+			cli.StringFlag{
+				Name:   "mx-sender",
+				Value:  "",
+				EnvVar: "BOOKMARKD_MX_SENDER",
+			},
+			cli.StringFlag{
+				Name:   "mx-recipient",
+				Value:  "",
+				EnvVar: "BOOKMARKD_MX_RECIPIENT",
+			},
+			cli.StringFlag{
 				Name:   "ca-cert",
 				EnvVar: "BOOKMARKD_CA_CERT",
 				Value:  "ca.pem",
@@ -52,29 +73,30 @@ func (c *commands) httpMode() cli.Command {
 			},
 		},
 		Action: func(ctx *cli.Context) error {
-			l, err := net.Listen("tcp", ctx.String("bind"))
+			lHTTP, err := net.Listen("tcp", ctx.String("bind"))
 			if err != nil {
-				return errors.E(ctx, err, "cannot bind port")
+				return errors.E(err, "cannot bind port")
+			}
+			lMX, err := net.Listen("tcp", ctx.String("mx-bind"))
+			if err != nil {
+				return errors.E(err, "cannot bind port (MX)")
 			}
 			tasks.Run(c.db)
-
+			mail.Run(lMX, c.db, ctx.String("mx-domain"), ctx.String("mx-sender"), ctx.String("mx-recipient"))
 			caCert, err := ioutil.ReadFile(ctx.String("ca-cert"))
 			if err != nil {
 				log.Println("skipping CA file:", err)
 			}
-
 			users, err := readUsersListFile(ctx.String("acceptable-users-file"))
 			if err != nil {
 				log.Println("skipping users list file:", err)
 			}
-
 			srv, err := web.New(c.db, caCert, users)
 			if err != nil {
-				return errors.E(ctx, err)
+				return errors.E(err)
 			}
-
-			err = http.Serve(l, srv)
-			return errors.E(ctx, err)
+			err = http.Serve(lHTTP, srv)
+			return errors.E(err)
 		},
 	}
 }
