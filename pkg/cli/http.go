@@ -23,6 +23,7 @@ import (
 	"os"
 
 	"cirello.io/bookmarkd/pkg/mail"
+	"cirello.io/bookmarkd/pkg/pubsub"
 	"cirello.io/bookmarkd/pkg/tasks"
 	"cirello.io/bookmarkd/pkg/web"
 	"cirello.io/errors"
@@ -81,8 +82,9 @@ func (c *commands) httpMode() cli.Command {
 			if err != nil {
 				return errors.E(err, "cannot bind port (MX)")
 			}
+			broker := pubsub.New()
 			tasks.Run(c.db)
-			mail.Run(lMX, c.db, ctx.String("mx-domain"), ctx.String("mx-sender"), ctx.String("mx-recipient"))
+			mail.Run(lMX, c.db, broker, ctx.String("mx-domain"), ctx.String("mx-sender"), ctx.String("mx-recipient"))
 			caCert, err := ioutil.ReadFile(ctx.String("ca-cert"))
 			if err != nil {
 				log.Println("skipping CA file:", err)
@@ -91,7 +93,7 @@ func (c *commands) httpMode() cli.Command {
 			if err != nil {
 				log.Println("skipping users list file:", err)
 			}
-			srv, err := web.New(c.db, caCert, users)
+			srv, err := web.New(c.db, caCert, users, broker)
 			if err != nil {
 				return errors.E(err)
 			}

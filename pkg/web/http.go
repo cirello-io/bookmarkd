@@ -45,10 +45,10 @@ type Server struct {
 }
 
 // New creates a web interface handler.
-func New(db *sqlx.DB, jwtSecret []byte, acceptableEmails []string) (*Server, error) {
+func New(db *sqlx.DB, jwtSecret []byte, acceptableEmails []string, broker *pubsub.Broker) (*Server, error) {
 	s := &Server{
 		db:        db,
-		pubsub:    pubsub.New(),
+		pubsub:    broker,
 		jwtSecret: jwtSecret,
 	}
 	s.acceptableEmails = make(map[string]struct{})

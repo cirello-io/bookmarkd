@@ -27,7 +27,9 @@ import (
 	"strings"
 	"time"
 
+	"cirello.io/bookmarkd/pkg/actions"
 	"cirello.io/bookmarkd/pkg/models"
+	"cirello.io/bookmarkd/pkg/pubsub"
 	smtp "github.com/emersion/go-smtp"
 	"github.com/jmoiron/sqlx"
 	xurls "mvdan.cc/xurls/v2"
@@ -37,6 +39,7 @@ type backend struct {
 	db        *sqlx.DB
 	sender    string
 	recipient string
+	pubsub    *pubsub.Broker
 }
 
 func (b *backend) Login(username, password string) (smtp.User, error) {
@@ -122,14 +125,14 @@ func (u *user) extractLink(r io.Reader) {
 				log.Println("cannot parse email subject:", err)
 				return
 			}
-			bookmarkDAO := models.NewBookmarkDAO(u.backend.db)
-			if _, err := bookmarkDAO.Insert(&models.Bookmark{
+			err = actions.AddBookmark(u.backend.db, &models.Bookmark{
 				URL:             urls[0],
 				Title:           title,
 				Inbox:           1,
 				LastStatusCode:  200,
 				LastStatusCheck: time.Now().Unix(),
-			}); err != nil {
+			}, u.backend.pubsub.Broadcast)
+			if err != nil {
 				log.Println("cannot store new link:", err)
 			}
 			log.Println("added:", urls[0])
@@ -138,11 +141,12 @@ func (u *user) extractLink(r io.Reader) {
 }
 
 // Run serves the MX service for email-based link intake.
-func Run(l net.Listener, db *sqlx.DB, domain, sender, recipient string) {
+func Run(l net.Listener, db *sqlx.DB, broker *pubsub.Broker, domain, sender, recipient string) {
 	be := &backend{
 		db:        db,
 		sender:    sender,
 		recipient: recipient,
+		pubsub:    broker,
 	}
 	s := smtp.NewServer(be)
 	s.Addr = l.Addr().String()
