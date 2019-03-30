@@ -164,6 +164,7 @@ func (b *bookmarkDAO) Invalid() ([]*Bookmark, error) {
 // Insert one bookmark.
 func (b *bookmarkDAO) Insert(bookmark *Bookmark) (*Bookmark, error) {
 	bookmark.CreatedAt = time.Now()
+	bookmark.Inbox = true
 	result, err := b.db.NamedExec(`
 		INSERT INTO bookmarks
 		(url, last_status_code, last_status_check, last_status_reason, title, created_at, inbox)
