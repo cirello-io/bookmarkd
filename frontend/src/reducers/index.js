@@ -1,4 +1,4 @@
-// Copyright 2018 github.com/ucirello
+// Copyright 2019 github.com/ucirello
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { combineReducers } from 'redux'
-import { routerReducer } from 'react-router-redux'
+import { connectRouter } from 'connected-react-router'
 import bookmarks from './bookmarks'
 
-export default combineReducers({
-  router: routerReducer,
-  bookmarks
+export default (history) => combineReducers({
+	router: connectRouter(history),
+	bookmarks
 })

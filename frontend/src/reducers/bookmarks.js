@@ -1,4 +1,4 @@
-// Copyright 2018 github.com/ucirello
+// Copyright 2019 github.com/ucirello
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,32 +12,67 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { folders, folderByName } from '../helpers/folders'
+
 const initialState = {
   loaded: false,
   bookmarks: [],
-  bookmark: null
+  filteredBookmarks: [],
+  bookmark: { id: 0, title: '', url: '' },
+  folder: folderByName('bookmarks'),
+  fuzzySearch: ''
 }
 
-function reducer (state = initialState, action) {
+function reducer(state = initialState, action) {
   switch (action.type) {
-    case 'INITIAL_LOAD': {
+    case 'SELECT_BOOKMARK_FOLDER':
       return {
+        ...state,
+        folder: folders[action.selectedIndex],
+        filteredBookmarks: folders[action.selectedIndex].filter(state.bookmarks)
+      }
+    case 'INITIAL_LOAD_COMPLETE': {
+      let ret = {
         ...state,
         loaded: true,
         bookmarks: (
           state.loaded
-          ? []
-          : state.bookmarks.slice()
+            ? []
+            : state.bookmarks.slice()
         ).filter((v) => v.id !== state.bookmark.id).concat(action.bookmarks)
+      }
+      ret.filteredBookmarks = state.folder.filter(ret.bookmarks)
+      return ret
+    }
+    case 'FUZZY_SEARCH': {
+      if (action.fuzzySearch === '') {
+        return {
+          ...state,
+          filteredBookmarks: state.folder.filter(state.bookmarks)
+        }
+      }
+      let fuzzySearch = action.fuzzySearch.toLowerCase()
+      return {
+        ...state,
+        fuzzySearch,
+        filteredBookmarks: state.folder.filter(state.bookmarks).filter((v) => {
+          return fuzzyMatch(v.url.toLowerCase(), fuzzySearch) ||
+            fuzzyMatch(v.title.toLowerCase(), fuzzySearch)
+        })
       }
     }
     case 'BOOKMARK_ADDED': {
       let bookmarks = state.bookmarks.slice()
       bookmarks.unshift(action.bookmark)
+      let fuzzySearch = state.fuzzySearch.toLowerCase()
       return {
         ...state,
         bookmark: action.bookmark,
-        bookmarks
+        bookmarks,
+        filteredBookmarks: state.folder.filter(bookmarks).filter((v) => {
+          return fuzzyMatch(v.url.toLowerCase(), fuzzySearch) ||
+            fuzzyMatch(v.title.toLowerCase(), fuzzySearch)
+        })
       }
     }
     case 'BOOKMARK_UPDATED': {
@@ -47,16 +82,28 @@ function reducer (state = initialState, action) {
         }
         return v
       })
+      var filteredBookmarks = state.filteredBookmarks.slice().map((v) => {
+        if (v.id === action.bookmark.id) {
+          return action.bookmark
+        }
+        return v
+      })
+      let fuzzySearch = state.fuzzySearch.toLowerCase()
       return {
         ...state,
         bookmark: action.bookmark,
-        bookmarks
+        bookmarks,
+        filteredBookmarks: state.folder.filter(filteredBookmarks).filter((v) => {
+          return fuzzyMatch(v.url.toLowerCase(), fuzzySearch) ||
+            fuzzyMatch(v.title.toLowerCase(), fuzzySearch)
+        })
       }
     }
     case 'BOOKMARK_DELETED': {
       return {
         ...state,
-        bookmarks: state.bookmarks.slice().filter((v) => v.id !== action.id)
+        bookmarks: state.bookmarks.slice().filter((v) => v.id !== action.id),
+        filteredBookmarks: state.folder.filter(state.filteredBookmarks.slice().filter((v) => v.id !== action.id)),
       }
     }
     case 'BOOKMARK':
@@ -64,9 +111,31 @@ function reducer (state = initialState, action) {
         ...state,
         bookmark: action.bookmark
       }
+    case 'RESET_BOOKMARK':
+      return {
+        ...state,
+        bookmark: { id: 0, title: '', url: '' }
+      }
     default:
       return state
   }
 }
 
 export default reducer
+
+// distilled from https://gist.github.com/mdwheele/7171422
+function fuzzyMatch(haystack, needle) {
+  var caret = 0
+  for (var i = 0; i < needle.length; i++) {
+    var c = needle[i]
+    if (c === ' ') {
+      continue
+    }
+    caret = haystack.indexOf(c, caret)
+    if (caret === -1) {
+      return false
+    }
+    caret++
+  }
+  return true
+}

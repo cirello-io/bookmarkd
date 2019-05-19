@@ -1,0 +1,30 @@
+.link-card {
+	margin: 5px;
+
+	.primary-content {
+		padding-left: 17px;
+		padding-right: 10px;
+
+		.headline-6 {
+			margin-top: 15px;
+			margin-bottom: 5px;
+			overflow: "hidden";
+			text-overflow: "ellipsis";
+			white-space: "nowrap";
+
+			.inbox {
+				display: block;
+				float: left;
+				padding-top: 2px;
+			}
+		}
+	}
+}
+
+.searchbar-row {
+	margin-bottom: 25px !important;
+}
+
+.add-new-bookmark-url {
+	margin-bottom: 25px;
+}

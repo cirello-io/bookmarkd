@@ -1,4 +1,4 @@
-// Copyright 2018 github.com/ucirello
+// Copyright 2019 github.com/ucirello
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,367 +12,195 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import './style.scss'
+import Button from '@material/react-button'
+import Card, { CardPrimaryContent, CardActions, CardActionButtons, CardActionIcons } from "@material/react-card";
+import Dialog, { DialogTitle, DialogContent, DialogFooter, DialogButton } from '@material/react-dialog'
+import Fab from '@material/react-fab'
+import MaterialIcon from '@material/react-material-icon'
 import React from 'react'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import {
-  Col,
-  FormControl,
-  FormGroup,
-  Glyphicon,
-  Grid,
-  Label,
-  Panel,
-  Row,
-  ToggleButton,
-  ToggleButtonGroup
-} from 'react-bootstrap'
-import { initialDataload, deleteBookmark, markBookmarkAsRead } from './actions'
+import TextField, { Input } from '@material/react-text-field';
 import moment from 'moment'
+import { Cell, Grid, Row } from '@material/react-layout-grid'
+import { Headline6, Caption } from '@material/react-typography'
+import { connect } from 'react-redux'
+import AddNewBookmark from '../components/AddNewBookmark'
+import { folderByName } from '../../helpers/folders'
 
-import './style.css'
-
-export class HomePage extends React.PureComponent {
-  // eslint-disable-line react/prefer-stateless-function
-  constructor (props) {
+class HomePage extends React.Component {
+  constructor(props) {
     super(props)
 
     this.state = {
-      visible: -1,
       fuzzySearch: '',
-      delete: -1,
-      hide: {},
-      viewMode: 0
+      delete: null,
+      addNewBookmark: false
     }
     this.filterBy = this.filterBy.bind(this)
-    this.shouldDelete = this.shouldDelete.bind(this)
-    this.delete = this.delete.bind(this)
-    this.hide = this.hide.bind(this)
-    this.changeViewMode = this.changeViewMode.bind(this)
+    this.deleteDialog = this.deleteDialog.bind(this)
+    this.deleteAction = this.deleteAction.bind(this)
+    this.addNewBookmark = this.addNewBookmark.bind(this)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     if (!this.dependenciesLoaded()) {
-      this.props.initialDataload()
+      this.props.dispatch({ type: 'INITIAL_LOAD_START' })
     }
   }
 
-  dependenciesLoaded () {
-    return this.props.links && this.props.links.loaded
+  dependenciesLoaded() {
+    return this.props.bookmarks && this.props.bookmarks.loaded
   }
 
-  filterBy (v) {
-    this.setState({ fuzzySearch: v.toLowerCase() })
+  filterBy(v) {
+    this.setState({ fuzzySearch: v }, () => {
+      this.props.dispatch({ type: 'TRIGGER_FUZZY_SEARCH', fuzzySearch: v })
+    })
   }
 
-  shouldDelete (e, id) {
+  deleteDialog(e, card) {
     e.preventDefault()
-    this.setState({ delete: id })
+    this.setState({ delete: card })
   }
 
-  delete (e, id) {
+  deleteAction() {
+    this.props.dispatch({ type: 'DELETE_BOOKMARK', card: { ...this.state.delete } })
+    this.setState({ delete: null })
+  }
+
+  markAsRead(e, id) {
     e.preventDefault()
-    this.props.deleteBookmark(id)
+    this.props.dispatch({ type: 'MARK_BOOKMARK_AS_READ', id })
   }
 
-  hide (e, id) {
-    e.preventDefault()
-    var hide = { ...this.state.hide }
-    hide[id] = true
-    this.setState({ hide: hide })
-  }
-
-  changeViewMode (mode) {
-    this.setState({ viewMode: mode })
-  }
-
-  markAsRead (e, id) {
-    e.preventDefault()
-    this.props.markBookmarkAsRead(id)
-  }
-
-  render () {
-    if (!this.props.bookmarks.loaded) {
-      return (
-        <Grid>
-          <Row>
-            <Col>
-              <div className='row-count'> loading... </div>
-            </Col>
-          </Row>
-        </Grid>
-      )
-    }
-
-    var bookmarks = this.props.bookmarks.bookmarks.filter(
-      v => !this.state.hide[v.id]
+  addNewBookmark() {
+    this.setState(
+      { addNewBookmark: true },
+      () => {
+        this.props.dispatch({ type: 'RESET_BOOKMARK' })
+      }
     )
-    if (this.state.fuzzySearch !== '') {
-      var fuzzySearch = this.state.fuzzySearch.toLowerCase()
-      bookmarks = bookmarks.filter(
-        v =>
-          fuzzyMatch(v.url.toLowerCase(), fuzzySearch) ||
-          fuzzyMatch(v.title.toLowerCase(), fuzzySearch)
-      )
-      bookmarks.sort((a, b) => {
-        const aRank =
-          a.url.toLowerCase().includes(fuzzySearch) ||
-          a.title.toLowerCase().includes(fuzzySearch)
-        const bRank =
-          b.url.toLowerCase().includes(fuzzySearch) ||
-          b.title.toLowerCase().includes(fuzzySearch)
-        if (aRank === bRank) {
-          return 0
-        }
-        if (aRank) {
-          return -1
-        }
-        return 1
-      })
+  }
+
+  render() {
+    if (!this.dependenciesLoaded()) {
+      return (<Grid></Grid>)
     }
 
-    var inbox = []
-    var listing = []
-    if (this.state.viewMode === 0) {
-      const card = v => (
-        <Panel key={v.id} className='link-card'>
-          <Grid fluid>
-            <Row onClick={() => window.open(v.url, '_blank')}>
-              <Col>
-                <div className='link-card-title'>
-                  <div>
-                    {v.inbox ? <span><Glyphicon glyph='inbox' />&nbsp;</span> : <span />}{v.title.trim() !== '' ? v.title.trim() : v.url}
-                  </div>
-                  <div className='link-card-title-url'>
-                    {v.host} - {moment(v.created_at).fromNow()}
-                    {v.last_status_code !== 200 ? [' ', <Label bsStyle='info'>{v.last_status_code}</Label>] : ''}
-                  </div>
-                </div>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <div
-                  className='link-card-button-open'
-                  onClick={() => window.open(v.url, '_blank')}
-                >
-                  <Glyphicon glyph='new-window' />
-                </div>
-                <div className='link-card-button-delete'>
-                  {this.state.delete === v.id ? (
-                    <span>
-                      <Glyphicon
-                        className='link-card-button-delete-ban-circle'
-                        glyph='ban-circle'
-                        onClick={e => this.shouldDelete(e, -1)}
-                      />
-                      &nbsp;
-                      <Glyphicon
-                        className='link-card-button-delete-trash'
-                        glyph='trash'
-                        onClick={e => this.delete(e, v.id)}
-                      />
-                    </span>
-                  ) : (
-                    <span>
-                      { !v.inbox
-                      ? <Glyphicon
-                        glyph='volume-off'
-                        onClick={e => this.hide(e, v.id)}
-                      />
-                      : <Glyphicon
-                        glyph='eye-open'
-                        onClick={e => this.markAsRead(e, v.id)}
-                      />}
-                      &nbsp;&nbsp;
-                      <Glyphicon
-                        glyph='remove'
-                        onClick={e => this.shouldDelete(e, v.id)}
-                      />
-                    </span>
-                  )}
-                </div>
-              </Col>
-            </Row>
-          </Grid>
-        </Panel>
-      )
-      listing = bookmarks.filter((v) => !v.inbox).map(card)
-      inbox = bookmarks.filter((v) => v.inbox).map(card)
-    } else if (this.state.viewMode === 1) {
-      var stripHost = host =>
-        host
-          .toLowerCase()
-          .trim()
-          .replace('www.', '')
-          .replace('http://www', '')
-          .replace('https://www', '')
-          .replace('http://', '')
-          .replace('https://', '')
-          .replace(/\/$/, '')
+    const listing = this.props.bookmarks.filteredBookmarks
 
-      bookmarks.sort((a, b) => {
-        var left = stripHost(a.host)
-        var right = stripHost(b.host)
-        if (left === right) {
-          return 0
-        }
-        return left < right ? -1 : 1
-      })
+    return <div>
+      {this.state.delete !== null
+        ? <Dialog
+          open
+          onClose={(action) => {
+            switch (action) {
+              case 'delete':
+                return this.deleteAction()
+              default:
+                this.setState({ delete: null })
+            }
+          }}>
+          <DialogTitle>Delete Bookmark</DialogTitle>
+          <DialogContent>
+            Delete "{this.state.delete.title.trim() !== '' ? this.state.delete.title.trim() : this.state.delete.url}" ?
+          </DialogContent>
+          <DialogFooter>
+            <DialogButton action='keep' isDefault>Keep</DialogButton>
+            <DialogButton action='delete'>Delete</DialogButton>
+          </DialogFooter>
+        </Dialog>
+        : null}
 
-      var repeatedURLs = {}
-      for (let i in bookmarks) {
-        let v = bookmarks[i]
-        let strippedURL = stripHost(v.url)
-        if (!repeatedURLs[strippedURL]) {
-          repeatedURLs[strippedURL] = []
-        }
-        repeatedURLs[strippedURL].push(v)
-      }
+      {this.state.addNewBookmark
+        ? <AddNewBookmark onSave={
+          () => this.setState(
+            { addNewBookmark: false },
+            () => {
+              this.props.dispatch({ type: 'SELECT_BOOKMARK_FOLDER', selectedIndex: folderByName('pending').selectedIndex })
+            }
+          )
+        } />
+        : null}
 
-      for (let i in repeatedURLs) {
-        repeatedURLs[i].sort((a, b) => {
-          return a.last_status_check < b.last_status_check ? -1 : 1
-        })
-      }
-
-      for (let i in repeatedURLs) {
-        let v = repeatedURLs[i][0]
-        listing.push(
-          <Panel key={v.id} className='link-list'>
-            <Grid fluid>
-              {repeatedURLs[i].map((v, k) => (
-                <Row key={v.id}>
-                  <Col className={k > 0 ? 'link-list-secondary-container' : ''}>
-                    <div
-                      className={k > 0 ? 'link-list-title-secondary' : 'link-list-title'}
-                      onClick={() => window.open(v.url, '_blank')} >
-                      {repeatedURLs[i].length > 1 && k === 0 ? [<Label bsStyle='info'>repeated</Label>, ' '] : ''}
-                      {v.title.trim() !== '' ? v.title.trim() : v.url}
-                      <span className='link-list-title-host'>
-                        {v.host} - {moment(v.created_at).fromNow()}
-                      </span>
-                    </div>
-                    <div style={{ float: 'right' }}>
-                      {this.state.delete === v.id ? (
-                        <span>
-                          <Glyphicon
-                            className='link-card-button-delete-ban-circle'
-                            glyph='ban-circle'
-                            onClick={e => this.shouldDelete(e, -1)}
-                          />
-                          &nbsp;
-                          <Glyphicon
-                            className='link-card-button-delete-trash'
-                            glyph='trash'
-                            onClick={e => this.delete(e, v.id)}
-                          />
-                        </span>
-                      ) : (
-                        <span>
-                          {' '}
-                          <Glyphicon
-                            glyph='remove'
-                            onClick={e => this.shouldDelete(e, v.id)}
-                          />{' '}
-                        </span>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              ))}
-            </Grid>
-          </Panel>
-        )
-      }
-    }
-    return (
-      <Grid>
-        <Row>
-          <Col>
-            <div className='row-count'>
-              <ToggleButtonGroup
-                name='viewMode'
-                type='radio'
-                defaultValue={0}
-                value={this.state.viewMode}
-                onChange={this.changeViewMode}
-              >
-                <ToggleButton value={0}>card</ToggleButton>
-                <ToggleButton value={1}>list</ToggleButton>
-              </ToggleButtonGroup>
-            </div>
-          </Col>
+      <Grid key={'homePageRoot'}>
+        <Row key={'searchBarRow'} className='searchbar-row'>
+          <Cell columns={3} key={'searchBarLeftPadding'} />
+          <Cell columns={6} align="middle">
+            <TextField
+              fullWidth
+              label='search'
+              onTrailingIconSelect={() => this.filterBy('')}
+              trailingIcon={<MaterialIcon role="button" icon="delete" />} >
+              <Input
+                value={this.state.fuzzySearch}
+                onChange={(e) => this.filterBy(e.currentTarget.value)} />
+            </TextField>
+          </Cell>
+          <Cell columns={3} key={'searchBarRightPadding'} />
         </Row>
-        <Row>
-          <Col>
-            <div className='row-count'>
-              {bookmarks.length +
-                ' bookmark' +
-                (bookmarks.length > 0 ? 's' : '')}
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <FormGroup>
-              <FormControl
-                id='filter-box'
-                type='text'
-                label='Text'
-                placeholder='search'
-                className='filter-box'
-                onChange={e => this.filterBy(e.target.value)}
-              />
-            </FormGroup>
-          </Col>
-        </Row>
-        {this.props.bookmarks.loaded && inbox.length > 0
-        ? [ <Row> <Col className='inbox-title'>inbox</Col> </Row>, <Row> <Col>{inbox}</Col> </Row>, <Row> <Col className='inbox-footer'><hr /></Col> </Row> ]
-        : ''}
-        <Row>
-          <Col>{this.props.bookmarks.loaded ? listing : ''}</Col>
+        <Row key={'homePageRow0'}>
+          {listing.map((v) => {
+            return <Cell columns={4} key={'bookmarkCard-cell-' + v.id}>
+              <BookmarkCard
+                key={'bookmarkCard' + v.id}
+                card={v}
+                markAsRead={(e) => { this.markAsRead(e, v.id) }}
+                delete={(e) => { this.deleteDialog(e, v) }} />
+            </Cell>
+          })}
         </Row>
       </Grid>
-    )
+      <Fab key={'addLink'} className='addNewBookmark' icon={
+        <MaterialIcon hasRipple icon='add' />
+      } onClick={() => this.addNewBookmark()} />
+    </div>
   }
 }
 
-function s2p (state) {
+function s2p(state) {
   return {
-    bookmarks: state.bookmarks ? state.bookmarks : { loaded: false }
+    bookmarks: state.bookmarks
   }
 }
 
-function d2p (dispatch) {
-  return bindActionCreators(
-    {
-      initialDataload,
-      deleteBookmark,
-      markBookmarkAsRead
-    },
-    dispatch
-  )
-}
+export default connect(s2p, null)(HomePage)
 
-// distilled from https://gist.github.com/mdwheele/7171422
-function fuzzyMatch (haystack, needle) {
-  var caret = 0
-  for (var i = 0; i < needle.length; i++) {
-    var c = needle[i]
-    if (c === ' ') {
-      continue
-    }
-    caret = haystack.indexOf(c, caret)
-    if (caret === -1) {
-      return false
-    }
-    caret++
-  }
-  return true
+function BookmarkCard(props) {
+  const card = props.card
+  const openLink = () => window.open(card.url, 'bookmark-window-' + card.id)
+  return <Card className='link-card' key={card.id}>
+    <CardPrimaryContent className='primary-content' onClick={openLink}>
+      <Headline6 className='headline-6'>
+        {card.inbox ? <div className='inbox'> <MaterialIcon hasRipple icon='inbox' /> &nbsp;</div> : <span />}
+        {card.title.trim() !== '' ? card.title.trim() : card.url}
+      </Headline6>
+      <Caption>
+        {card.host} - {moment(card.created_at).fromNow()}
+        {card.last_status_code !== 200
+          ? [
+            ' - ',
+            card.last_status_code === 0
+              ? 'unknown HTTP status'
+              : 'HTTP ' + card.last_status_code
+          ]
+          : ''}
+      </Caption>
+    </CardPrimaryContent>
+    <CardActions>
+      <CardActionButtons>
+        <Button onClick={openLink}>Open</Button>
+      </CardActionButtons>
+      <CardActionIcons>
+        {card.inbox
+          ? <MaterialIcon
+            hasRipple icon='visibility'
+            onClick={props.markAsRead} />
+          : <div />}
+        <MaterialIcon
+          hasRipple icon='remove'
+          onClick={props.delete} />
+      </CardActionIcons>
+    </CardActions>
+  </Card>
 }
-
-export default connect(
-  s2p,
-  d2p
-)(HomePage)

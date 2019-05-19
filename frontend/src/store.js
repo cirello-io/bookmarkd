@@ -1,4 +1,4 @@
-// Copyright 2018 github.com/ucirello
+// Copyright 2019 github.com/ucirello
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,26 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { createBrowserHistory } from 'history'
+import createSagaMiddleware from 'redux-saga'
+import createRootReducer from './reducers/index'
 import { createStore, applyMiddleware, compose } from 'redux'
-import { routerMiddleware } from 'react-router-redux'
-import thunk from 'redux-thunk'
-import createHistory from 'history/createBrowserHistory'
-import rootReducer from './reducers/index'
+import { logger } from 'redux-logger'
+import { routerMiddleware } from 'connected-react-router'
+import rootSaga from './sagas/index'
+import wsSaga from './sagas/websocket'
 
-export const history = createHistory()
+const sagaMiddleware = createSagaMiddleware()
+const websocketMiddleware = createSagaMiddleware()
 
-const initialState = {}
-const enhancers = []
-const middleware = [thunk, routerMiddleware(history)]
+export const history = createBrowserHistory()
+export default createStore(
+  createRootReducer(history),
+  {},
+  compose(
+    applyMiddleware(
+      routerMiddleware(history),
+      sagaMiddleware,
+      websocketMiddleware,
+      logger
+    )
+  )
+)
 
-if (process.env.NODE_ENV === 'development') {
-  const devToolsExtension = window.__REDUX_DEVTOOLS_EXTENSION__
-
-  if (typeof devToolsExtension === 'function') {
-    enhancers.push(devToolsExtension())
-  }
-}
-
-const composedEnhancers = compose(applyMiddleware(...middleware), ...enhancers)
-
-export default createStore(rootReducer, initialState, composedEnhancers)
+sagaMiddleware.run(rootSaga)
+sagaMiddleware.run(wsSaga)
