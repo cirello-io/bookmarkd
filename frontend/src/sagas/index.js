@@ -59,6 +59,7 @@ function* linkWatcher() {
 }
 
 function* fuzzySearch(action) {
+  yield delay(250)
   yield put({ type: 'FUZZY_SEARCH', fuzzySearch: action.fuzzySearch });
 }
 
