@@ -196,7 +196,7 @@ function BookmarkCard(props) {
   return <Card className='link-card' key={card.id}>
     <CardPrimaryContent className='primary-content' onClick={openLink}>
       <Headline6 className='headline-6'>
-        {card.inbox ? <div className='inbox'> <MaterialIcon hasRipple icon='inbox' /> &nbsp;</div> : <span />}
+        {card.inbox ? <div className='inbox'> <MaterialIcon icon='inbox' /> &nbsp;</div> : <span />}
         {card.title.trim() !== '' ? card.title.trim() : card.url}
       </Headline6>
       <Caption>
@@ -218,11 +218,11 @@ function BookmarkCard(props) {
       <CardActionIcons>
         {card.inbox
           ? <MaterialIcon
-            hasRipple icon='visibility'
+            icon='visibility'
             onClick={props.markAsRead} />
           : <div />}
         <MaterialIcon
-          hasRipple icon='remove'
+          icon='remove'
           onClick={props.deleteDialog} />
       </CardActionIcons>
     </CardActions>
