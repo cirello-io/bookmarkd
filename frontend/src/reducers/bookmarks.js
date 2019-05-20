@@ -19,7 +19,7 @@ const initialState = {
   bookmarks: [],
   filteredBookmarks: [],
   bookmark: { id: 0, title: '', url: '' },
-  folder: folderByName('bookmarks'),
+  folder: null,
   fuzzySearch: ''
 }
 
@@ -41,7 +41,13 @@ function reducer(state = initialState, action) {
             : state.bookmarks.slice()
         ).filter((v) => v.id !== state.bookmark.id).concat(action.bookmarks)
       }
-      ret.filteredBookmarks = state.folder.filter(ret.bookmarks)
+      if (!state.folder) {
+        ret.folder = folderByName('bookmarks')
+        if (folderByName('pending').filter(ret.bookmarks).length > 0) {
+          ret.folder = folderByName('pending')
+        }
+      }
+      ret.filteredBookmarks = ret.folder.filter(ret.bookmarks)
       return ret
     }
     case 'FUZZY_SEARCH': {

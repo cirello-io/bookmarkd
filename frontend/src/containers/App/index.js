@@ -95,7 +95,7 @@ export default withRouter(connect(
   (state) => {
     return {
       loaded: state.bookmarks.loaded,
-      selectedIndex: state.bookmarks.folder.selectedIndex,
+      selectedIndex: state.bookmarks.loaded ? state.bookmarks.folder.selectedIndex : 0,
       bookmarkCount: state.bookmarks.loaded
         ? folderByName('bookmarks').filter(state.bookmarks.bookmarks).length
         : 0,
