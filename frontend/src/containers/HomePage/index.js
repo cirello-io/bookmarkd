@@ -35,11 +35,9 @@ class HomePage extends React.Component {
     super(props)
 
     this.state = {
-      fuzzySearch: '',
       delete: null,
       addNewBookmark: false
     }
-    this.filterBy = this.filterBy.bind(this)
     this.deleteDialog = this.deleteDialog.bind(this)
     this.deleteAction = this.deleteAction.bind(this)
     this.addNewBookmark = this.addNewBookmark.bind(this)
@@ -47,19 +45,9 @@ class HomePage extends React.Component {
   }
 
   componentDidMount() {
-    if (!this.dependenciesLoaded()) {
+    if (!this.props.loaded) {
       this.props.dispatch({ type: 'INITIAL_LOAD_START' })
     }
-  }
-
-  dependenciesLoaded() {
-    return this.props.bookmarks && this.props.bookmarks.loaded
-  }
-
-  filterBy(v) {
-    this.setState({ fuzzySearch: v }, () => {
-      this.props.dispatch({ type: 'TRIGGER_FUZZY_SEARCH', fuzzySearch: v })
-    })
   }
 
   deleteDialog(e, card) {
@@ -87,7 +75,7 @@ class HomePage extends React.Component {
   }
 
   render() {
-    if (!this.dependenciesLoaded()) {
+    if (!this.props.loaded) {
       return (<Grid></Grid>)
     }
 
@@ -126,9 +114,9 @@ class HomePage extends React.Component {
         : null}
 
       <Grid key={'homePageRoot'} className='home-page-root'>
-        <SearchBox fuzzySearch={this.state.fuzzySearch} filterBy={this.filterBy} />
+        <SearchBox />
         <BookmarkCards
-          listing={this.props.bookmarks.filteredBookmarks}
+          listing={this.props.filteredBookmarks}
           markAsRead={this.markAsRead}
           deleteDialog={this.deleteDialog} />
       </Grid>
@@ -141,40 +129,56 @@ class HomePage extends React.Component {
 
 function s2p(state) {
   return {
-    bookmarks: state.bookmarks
+    loaded: state.bookmarks && state.bookmarks.loaded,
+    filteredBookmarks: state.bookmarks.filteredBookmarks || []
   }
 }
 
 export default connect(s2p, null)(HomePage)
 
-function SearchBox(props) {
-  return <Row key={'searchBarRow'} className='searchbar-row'>
-    <Cell columns={3} key={'searchBarLeftPadding'} />
-    <Cell columns={6} align="middle">
-      <TextField
-        fullWidth
-        label='search'
-        onTrailingIconSelect={() => props.filterBy('')}
-        trailingIcon={<MaterialIcon role="button" icon="delete" />} >
-        <Input
-          value={props.fuzzySearch}
-          onChange={(e) => props.filterBy(e.currentTarget.value)} />
-      </TextField>
-    </Cell>
-    <Cell columns={3} key={'searchBarRightPadding'} />
-  </Row>
-}
+const SearchBox = connect(()=>({}), null)(class extends React.PureComponent {
+  constructor(props) {
+    super(props)
+    this.state = {
+      fuzzySearch: ''
+    }
+    this.filterBy = this.filterBy.bind(this)
+  }
+
+  filterBy(v) {
+    this.setState({ fuzzySearch: v }, () => {
+      this.props.dispatch({ type: 'TRIGGER_FUZZY_SEARCH', fuzzySearch: v })
+    })
+  }
+
+  render(){
+    return <Row key={'searchBarRow'} className='searchbar-row'>
+      <Cell columns={3} key={'searchBarLeftPadding'} />
+      <Cell columns={6}>
+        <TextField
+          fullWidth
+          label='search'
+          onTrailingIconSelect={() => this.filterBy('')}
+          trailingIcon={<MaterialIcon role="button" icon="delete" />} >
+          <Input
+            value={this.state.fuzzySearch}
+            onChange={(e) => this.filterBy(e.currentTarget.value)} />
+        </TextField>
+      </Cell>
+      <Cell columns={3} key={'searchBarRightPadding'} />
+    </Row>
+  }
+})
 
 function isArrayEqual(x, y) {
   return isEmpty(xorWith(x, y, isEqual));
 };
 
-
 class BookmarkCards extends React.Component {
   shouldComponentUpdate(nextProps) {
     return !isArrayEqual(this.props.listing, nextProps.listing)
   }
-  render () {
+  render() {
     const listing = this.props.listing
     return <Row key={'homePageRow0'}>
       {listing.map((v) => {
@@ -186,7 +190,7 @@ class BookmarkCards extends React.Component {
             deleteDialog={(e) => { this.props.deleteDialog(e, v) }} />
         </Cell>
       })}
-      </Row>
+    </Row>
   }
 }
 
