@@ -26,6 +26,9 @@ import { Headline6, Caption } from '@material/react-typography'
 import { connect } from 'react-redux'
 import AddNewBookmark from '../components/AddNewBookmark'
 import { folderByName } from '../../helpers/folders'
+import xorWith from 'lodash/xorWith'
+import isEqual from 'lodash/isEqual'
+import isEmpty from 'lodash/isEmpty'
 
 class HomePage extends React.Component {
   constructor(props) {
@@ -87,8 +90,6 @@ class HomePage extends React.Component {
       return (<Grid></Grid>)
     }
 
-    const listing = this.props.bookmarks.filteredBookmarks
-
     return <div>
       {this.state.delete !== null
         ? <Dialog
@@ -124,32 +125,8 @@ class HomePage extends React.Component {
         : null}
 
       <Grid key={'homePageRoot'} className='home-page-root'>
-        <Row key={'searchBarRow'} className='searchbar-row'>
-          <Cell columns={3} key={'searchBarLeftPadding'} />
-          <Cell columns={6} align="middle">
-            <TextField
-              fullWidth
-              label='search'
-              onTrailingIconSelect={() => this.filterBy('')}
-              trailingIcon={<MaterialIcon role="button" icon="delete" />} >
-              <Input
-                value={this.state.fuzzySearch}
-                onChange={(e) => this.filterBy(e.currentTarget.value)} />
-            </TextField>
-          </Cell>
-          <Cell columns={3} key={'searchBarRightPadding'} />
-        </Row>
-        <Row key={'homePageRow0'}>
-          {listing.map((v) => {
-            return <Cell columns={4} key={'bookmarkCard-cell-' + v.id}>
-              <BookmarkCard
-                key={'bookmarkCard' + v.id}
-                card={v}
-                markAsRead={(e) => { this.markAsRead(e, v.id) }}
-                delete={(e) => { this.deleteDialog(e, v) }} />
-            </Cell>
-          })}
-        </Row>
+        <SearchBox fuzzySearch={this.state.fuzzySearch} filterBy={this.filterBy} />
+        <BookmarkCards listing={this.props.bookmarks.filteredBookmarks} />
       </Grid>
       <Fab key={'addLink'} className='addNewBookmark' icon={
         <MaterialIcon hasRipple icon='add' />
@@ -165,6 +142,49 @@ function s2p(state) {
 }
 
 export default connect(s2p, null)(HomePage)
+
+function SearchBox(props) {
+  return <Row key={'searchBarRow'} className='searchbar-row'>
+    <Cell columns={3} key={'searchBarLeftPadding'} />
+    <Cell columns={6} align="middle">
+      <TextField
+        fullWidth
+        label='search'
+        onTrailingIconSelect={() => props.filterBy('')}
+        trailingIcon={<MaterialIcon role="button" icon="delete" />} >
+        <Input
+          value={props.fuzzySearch}
+          onChange={(e) => props.filterBy(e.currentTarget.value)} />
+      </TextField>
+    </Cell>
+    <Cell columns={3} key={'searchBarRightPadding'} />
+  </Row>
+}
+
+function isArrayEqual(x, y) {
+  return isEmpty(xorWith(x, y, isEqual));
+};
+
+
+class BookmarkCards extends React.Component {
+  shouldComponentUpdate(nextProps) {
+    return !isArrayEqual(this.props.listing, nextProps.listing)
+  }
+  render () {
+    const listing = this.props.listing
+    return <Row key={'homePageRow0'}>
+      {listing.map((v) => {
+        return <Cell columns={4} key={'bookmarkCard-cell-' + v.id}>
+          <BookmarkCard
+            key={'bookmarkCard' + v.id}
+            card={v}
+            markAsRead={(e) => { this.markAsRead(e, v.id) }}
+            delete={(e) => { this.deleteDialog(e, v) }} />
+        </Cell>
+      })}
+      </Row>
+  }
+}
 
 function BookmarkCard(props) {
   const card = props.card
