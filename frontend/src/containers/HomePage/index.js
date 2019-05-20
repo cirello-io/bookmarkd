@@ -43,6 +43,7 @@ class HomePage extends React.Component {
     this.deleteDialog = this.deleteDialog.bind(this)
     this.deleteAction = this.deleteAction.bind(this)
     this.addNewBookmark = this.addNewBookmark.bind(this)
+    this.markAsRead = this.markAsRead.bind(this)
   }
 
   componentDidMount() {
@@ -126,7 +127,10 @@ class HomePage extends React.Component {
 
       <Grid key={'homePageRoot'} className='home-page-root'>
         <SearchBox fuzzySearch={this.state.fuzzySearch} filterBy={this.filterBy} />
-        <BookmarkCards listing={this.props.bookmarks.filteredBookmarks} />
+        <BookmarkCards
+          listing={this.props.bookmarks.filteredBookmarks}
+          markAsRead={this.markAsRead}
+          deleteDialog={this.deleteDialog} />
       </Grid>
       <Fab key={'addLink'} className='addNewBookmark' icon={
         <MaterialIcon hasRipple icon='add' />
@@ -178,8 +182,8 @@ class BookmarkCards extends React.Component {
           <BookmarkCard
             key={'bookmarkCard' + v.id}
             card={v}
-            markAsRead={(e) => { this.markAsRead(e, v.id) }}
-            delete={(e) => { this.deleteDialog(e, v) }} />
+            markAsRead={(e) => { this.props.markAsRead(e, v.id) }}
+            deleteDialog={(e) => { this.props.deleteDialog(e, v) }} />
         </Cell>
       })}
       </Row>
@@ -219,7 +223,7 @@ function BookmarkCard(props) {
           : <div />}
         <MaterialIcon
           hasRipple icon='remove'
-          onClick={props.delete} />
+          onClick={props.deleteDialog} />
       </CardActionIcons>
     </CardActions>
   </Card>
