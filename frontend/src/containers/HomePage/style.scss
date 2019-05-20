@@ -1,3 +1,7 @@
+.home-page-root {
+	width: 80%;
+}
+
 .link-card {
 	margin: 5px;
 
@@ -8,9 +12,9 @@
 		.headline-6 {
 			margin-top: 15px;
 			margin-bottom: 5px;
-			overflow: "hidden";
-			text-overflow: "ellipsis";
-			white-space: "nowrap";
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 
 			.inbox {
 				display: block;

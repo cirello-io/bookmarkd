@@ -123,7 +123,7 @@ class HomePage extends React.Component {
         } />
         : null}
 
-      <Grid key={'homePageRoot'}>
+      <Grid key={'homePageRoot'} className='home-page-root'>
         <Row key={'searchBarRow'} className='searchbar-row'>
           <Cell columns={3} key={'searchBarLeftPadding'} />
           <Cell columns={6} align="middle">
