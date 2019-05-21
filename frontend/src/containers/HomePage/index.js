@@ -26,9 +26,8 @@ import { Headline6, Caption } from '@material/react-typography'
 import { connect } from 'react-redux'
 import AddNewBookmark from '../components/AddNewBookmark'
 import { folderByName } from '../../helpers/folders'
-import xorWith from 'lodash/xorWith'
-import isEqual from 'lodash/isEqual'
-import isEmpty from 'lodash/isEmpty'
+import chunk from 'lodash/chunk'
+import TrackVisibility from 'react-on-screen';
 
 class HomePage extends React.Component {
   constructor(props) {
@@ -104,8 +103,8 @@ class HomePage extends React.Component {
 
       {this.state.addNewBookmark
         ? <AddNewBookmark
-            onClose={ () => this.setState({ addNewBookmark: false }) }
-            onSave={() => this.props.dispatch({ type: 'SELECT_BOOKMARK_FOLDER', selectedIndex: folderByName('pending').selectedIndex }) } />
+          onClose={() => this.setState({ addNewBookmark: false })}
+          onSave={() => this.props.dispatch({ type: 'SELECT_BOOKMARK_FOLDER', selectedIndex: folderByName('pending').selectedIndex })} />
         : null}
 
       <Grid key={'homePageRoot'} className='home-page-root'>
@@ -131,7 +130,7 @@ function s2p(state) {
 
 export default connect(s2p, null)(HomePage)
 
-const SearchBox = connect(()=>({}), null)(class extends React.PureComponent {
+const SearchBox = connect(() => ({}), null)(class extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -146,7 +145,7 @@ const SearchBox = connect(()=>({}), null)(class extends React.PureComponent {
     })
   }
 
-  render(){
+  render() {
     return <Row key={'searchBarRow'} className='searchbar-row'>
       <Cell columns={3} key={'searchBarLeftPadding'} />
       <Cell columns={6}>
@@ -165,28 +164,34 @@ const SearchBox = connect(()=>({}), null)(class extends React.PureComponent {
   }
 })
 
-function isArrayEqual(x, y) {
-  return isEmpty(xorWith(x, y, isEqual));
-};
-
 class BookmarkCards extends React.Component {
-  shouldComponentUpdate(nextProps) {
-    return !isArrayEqual(this.props.listing, nextProps.listing)
-  }
   render() {
     const listing = this.props.listing
-    return <Row key={'homePageRow0'}>
-      {listing.map((v) => {
-        return <Cell columns={4} key={'bookmarkCard-cell-' + v.id}>
-          <BookmarkCard
-            key={'bookmarkCard' + v.id}
-            card={v}
-            markAsRead={(e) => { this.props.markAsRead(e, v.id) }}
-            deleteDialog={(e) => { this.props.deleteDialog(e, v) }} />
-        </Cell>
-      })}
-    </Row>
+    return chunk(listing, 3).map(
+      (cells, index) => {
+        return <TrackVisibility key={'bcr-visibility-' + index} partialVisibility>
+          <BookmarkCardsRow
+            index={index}
+            cells={cells}
+            markAsRead={this.props.markAsRead}
+            deleteDialog={this.props.deleteDialog}
+          />
+        </TrackVisibility>
+      }
+    )
   }
+}
+
+function BookmarkCardsRow({ index, cells, isVisible, markAsRead, deleteDialog }) {
+  return <Row key={'homePageRow' + index} style={{ visibility: !isVisible ? 'hidden' : '' }}>
+    {cells.map((v) => <Cell columns={4} key={'bookmarkCard-cell-' + v.id}>
+      <BookmarkCard
+        key={'bookmarkCard' + v.id}
+        card={v}
+        markAsRead={(e) => { markAsRead(e, v.id) }}
+        deleteDialog={(e) => { deleteDialog(e, v) }} />
+    </Cell>)}
+  </Row>
 }
 
 function BookmarkCard(props) {

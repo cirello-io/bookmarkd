@@ -12,18 +12,6 @@
 @import '@material/react-dialog/index.scss';
 @import '@material/react-text-field/index.scss';
 
-.drawer-container {
-  display: flex;
-  flex-direction: row;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.drawer-app-content {
-  flex: auto;
-  overflow: auto;
-}
-
 .top-app-bar-fix-adjust {
   display: flex;
   width: 100%;

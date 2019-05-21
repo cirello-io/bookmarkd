@@ -15,7 +15,7 @@
 import React from 'react'
 import MaterialIcon from '@material/react-material-icon'
 import TopAppBar, { TopAppBarFixedAdjust, TopAppBarIcon, TopAppBarRow, TopAppBarSection, TopAppBarTitle } from '@material/react-top-app-bar'
-import Drawer, { DrawerContent, DrawerAppContent } from '@material/react-drawer'
+import Drawer, { DrawerContent } from '@material/react-drawer'
 import List, { ListItem, ListItemText, ListItemGraphic, ListItemMeta } from '@material/react-list'
 import { Route, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
@@ -76,32 +76,26 @@ class App extends React.Component {
       </DrawerContent>
     </Drawer>
 
-    return (
-      <div className='drawer-container'>
-        <TopAppBar fixed>
-          <TopAppBarRow>
-            <TopAppBarSection align='start'>
-              <TopAppBarIcon navIcon tabIndex={0}>
-                <MaterialIcon hasRipple icon='menu' onClick={
-                  () => this.setState({ open: !this.state.open })
-                } />
-              </TopAppBarIcon>
-              <TopAppBarTitle>Bookmarks Manager</TopAppBarTitle>
-            </TopAppBarSection>
-          </TopAppBarRow>
-        </TopAppBar>
-        <TopAppBarFixedAdjust className='top-app-bar-fix-adjust'>
-          {drawer}
-          <DrawerAppContent className='drawer-app-content'>
-            {!this.props.loaded ? <LinearProgress indeterminate /> : null}
-
-            <Route exact path='/' component={HomePage} />
-            <Route path='/post' component={PostPage} />
-
-          </DrawerAppContent>
-        </TopAppBarFixedAdjust>
-      </div>
-    );
+    return <div>
+      <TopAppBar fixed>
+        <TopAppBarRow>
+          <TopAppBarSection align='start'>
+            <TopAppBarIcon navIcon tabIndex={0}>
+              <MaterialIcon hasRipple icon='menu' onClick={
+                () => this.setState({ open: !this.state.open })
+              } />
+            </TopAppBarIcon>
+            <TopAppBarTitle>Bookmarks Manager</TopAppBarTitle>
+          </TopAppBarSection>
+        </TopAppBarRow>
+      </TopAppBar>
+      <TopAppBarFixedAdjust>
+        {drawer}
+        {!this.props.loaded ? <LinearProgress indeterminate /> : null}
+        <Route exact path='/'> <HomePage /> </Route>
+        <Route path='/post' component={PostPage} />
+      </TopAppBarFixedAdjust>
+    </div>
   }
 }
 
