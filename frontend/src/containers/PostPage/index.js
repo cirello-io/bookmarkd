@@ -21,12 +21,12 @@ export function PostPage({ history, dispatch }) {
   const url = new URLSearchParams(window.location.search).get('url')
   return <AddNewBookmark
     url={url}
+    onClose={() => {history.push('/')}}
     onSave={() => {
       dispatch({ type: 'SELECT_BOOKMARK_FOLDER', selectedIndex: folderByName('pending').selectedIndex })
-      history.push('/')
     }} />
 }
 
-function s2p(state) { return {} }
+function s2p() { return {} }
 
 export default connect(s2p, null)(PostPage)

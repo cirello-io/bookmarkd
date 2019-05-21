@@ -58,6 +58,7 @@ class AddNewBookmark extends React.Component {
         if (action === 'add') {
           this.save()
         }
+        this.props.onClose()
       }}>
       <DialogTitle>Add Bookmark</DialogTitle>
       <DialogContent>

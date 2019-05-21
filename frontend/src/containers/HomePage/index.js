@@ -103,14 +103,9 @@ class HomePage extends React.Component {
         : null}
 
       {this.state.addNewBookmark
-        ? <AddNewBookmark onSave={
-          () => this.setState(
-            { addNewBookmark: false },
-            () => {
-              this.props.dispatch({ type: 'SELECT_BOOKMARK_FOLDER', selectedIndex: folderByName('pending').selectedIndex })
-            }
-          )
-        } />
+        ? <AddNewBookmark
+            onClose={ () => this.setState({ addNewBookmark: false }) }
+            onSave={() => this.props.dispatch({ type: 'SELECT_BOOKMARK_FOLDER', selectedIndex: folderByName('pending').selectedIndex }) } />
         : null}
 
       <Grid key={'homePageRoot'} className='home-page-root'>
