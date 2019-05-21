@@ -24,74 +24,36 @@ import PostPage from '../PostPage'
 import './style.scss'
 import LinearProgress from '@material/react-linear-progress';
 import { folderByName } from '../../helpers/folders'
+import Tab from '@material/react-tab';
+import TabBar from '@material/react-tab-bar';
 
 class App extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      open: false
-    }
     this.handleSelect = this.handleSelect.bind(this)
   }
 
   handleSelect(selectedIndex) {
-    this.setState({ open: false }, () => {
-      this.props.dispatch({ type: 'SELECT_BOOKMARK_FOLDER', selectedIndex: selectedIndex })
-    })
+    this.props.dispatch({ type: 'SELECT_BOOKMARK_FOLDER', selectedIndex: selectedIndex })
   }
 
   render() {
-    const drawer = <Drawer
-      modal
-      open={this.state.open}
-      onClose={() => this.setState({ open: false })}
-    >
-      <DrawerContent>
-        <List
-          singleSelection
-          selectedIndex={this.props.selectedIndex}
-          handleSelect={this.handleSelect}
-        >
-          <ListItem>
-            <ListItemGraphic graphic={<MaterialIcon icon='bookmark' />} />
-            <ListItemText primaryText='Bookmarks' />
-            <ListItemMeta meta={<span>{this.props.bookmarkCount}</span>} />
-          </ListItem>
-          <ListItem>
-            <ListItemGraphic graphic={<MaterialIcon icon='all_inbox' />} />
-            <ListItemText primaryText='Pending' />
-            <ListItemMeta meta={<span>{this.props.pendingCount}</span>} />
-          </ListItem>
-          <ListItem>
-            <ListItemGraphic graphic={<MaterialIcon icon='compare_arrows' />} />
-            <ListItemText primaryText='Duplicated' />
-            <ListItemMeta meta={<span>{this.props.duplicatedCount}</span>} />
-          </ListItem>
-          <ListItem>
-            <ListItemGraphic graphic={<MaterialIcon icon='bookmarks' />} />
-            <ListItemText primaryText='All' />
-            <ListItemMeta meta={<span>{this.props.totalCount}</span>} />
-          </ListItem>
-        </List>
-      </DrawerContent>
-    </Drawer>
-
     return <div>
       <TopAppBar fixed>
         <TopAppBarRow>
           <TopAppBarSection align='start'>
-            <TopAppBarIcon navIcon tabIndex={0}>
-              <MaterialIcon hasRipple icon='menu' onClick={
-                () => this.setState({ open: !this.state.open })
-              } />
-            </TopAppBarIcon>
             <TopAppBarTitle>Bookmarks Manager</TopAppBarTitle>
           </TopAppBarSection>
         </TopAppBarRow>
       </TopAppBar>
       <TopAppBarFixedAdjust>
-        {drawer}
         {!this.props.loaded ? <LinearProgress indeterminate /> : null}
+        <TabBar activeIndex={this.props.selectedIndex} handleActiveIndexUpdate={this.handleSelect}>
+          <Tab> <span className='mdc-tab__text-label'>Bookmarks {/* <span>{this.props.bookmarkCount}</span> */} </span> </Tab>
+          <Tab> <span className='mdc-tab__text-label'>Pending {/* <span>{this.props.pendingCount}</span> */} </span> </Tab>
+          <Tab> <span className='mdc-tab__text-label'>Duplicated {/* <span>{this.props.duplicatedCount}</span> */} </span> </Tab>
+          <Tab> <span className='mdc-tab__text-label'>All {/* <span>{this.props.totalCount}</span> */} </span> </Tab>
+        </TabBar>
         <Route exact path='/'> <HomePage /> </Route>
         <Route path='/post' component={PostPage} />
       </TopAppBarFixedAdjust>
