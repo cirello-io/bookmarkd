@@ -198,7 +198,7 @@ function BookmarkCard(props) {
         {card.inbox ? <div className='inbox'> <MaterialIcon icon='inbox' /> &nbsp;</div> : <span />}
         {card.title.trim() !== '' ? card.title.trim() : card.url}
       </Headline6>
-      <Caption>
+      <Caption className='caption'>
         {card.host} - {moment(card.created_at).fromNow()}
         {card.last_status_code !== 200
           ? [
