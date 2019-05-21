@@ -51,65 +51,50 @@ function reducer(state = initialState, action) {
       return ret
     }
     case 'FUZZY_SEARCH': {
-      if (action.fuzzySearch === '') {
-        return {
-          ...state,
-          filteredBookmarks: state.folder.filter(state.bookmarks)
-        }
-      }
-      let fuzzySearch = action.fuzzySearch.toLowerCase()
       return {
         ...state,
         fuzzySearch,
-        filteredBookmarks: state.folder.filter(state.bookmarks).filter((v) => {
-          return fuzzyMatch(v.url.toLowerCase(), fuzzySearch) ||
-            fuzzyMatch(v.title.toLowerCase(), fuzzySearch)
-        })
+        filteredBookmarks: fuzzySearch(
+          state.folder.filter(state.bookmarks),
+          action.fuzzySearch.toLowerCase()
+        )
       }
     }
     case 'BOOKMARK_ADDED': {
       let bookmarks = state.bookmarks.slice()
       bookmarks.unshift(action.bookmark)
-      let fuzzySearch = state.fuzzySearch.toLowerCase()
       return {
         ...state,
         bookmark: action.bookmark,
         bookmarks,
-        filteredBookmarks: state.folder.filter(bookmarks).filter((v) => {
-          return fuzzyMatch(v.url.toLowerCase(), fuzzySearch) ||
-            fuzzyMatch(v.title.toLowerCase(), fuzzySearch)
-        })
+        filteredBookmarks: fuzzySearch(
+          state.folder.filter(bookmarks),
+          state.fuzzySearch.toLowerCase()
+        )
       }
     }
     case 'BOOKMARK_UPDATED': {
       var bookmarks = state.bookmarks.slice().map((v) => {
-        if (v.id === action.bookmark.id) {
-          return action.bookmark
-        }
-        return v
+        return v.id === action.bookmark.id ? action.bookmark : v
       })
       var filteredBookmarks = state.filteredBookmarks.slice().map((v) => {
-        if (v.id === action.bookmark.id) {
-          return action.bookmark
-        }
-        return v
+        return v.id === action.bookmark.id ? action.bookmark : v
       })
-      let fuzzySearch = state.fuzzySearch.toLowerCase()
       return {
         ...state,
         bookmark: action.bookmark,
         bookmarks,
-        filteredBookmarks: state.folder.filter(filteredBookmarks).filter((v) => {
-          return fuzzyMatch(v.url.toLowerCase(), fuzzySearch) ||
-            fuzzyMatch(v.title.toLowerCase(), fuzzySearch)
-        })
+        filteredBookmarks: fuzzySearch(
+          state.folder.filter(filteredBookmarks),
+          state.fuzzySearch.toLowerCase()
+        )
       }
     }
     case 'BOOKMARK_DELETED': {
       return {
         ...state,
         bookmarks: state.bookmarks.slice().filter((v) => v.id !== action.id),
-        filteredBookmarks: state.folder.filter(state.filteredBookmarks.slice().filter((v) => v.id !== action.id)),
+        filteredBookmarks: state.folder.filter(state.filteredBookmarks.slice().filter((v) => v.id !== action.id))
       }
     }
     case 'BOOKMARK':
@@ -128,6 +113,32 @@ function reducer(state = initialState, action) {
 }
 
 export default reducer
+
+function fuzzySearch(list, pattern) {
+  if (!pattern) {
+    return list
+  }
+  let ret = list.filter((v) => {
+    return fuzzyMatch(v.url.toLowerCase(), pattern) ||
+      fuzzyMatch(v.title.toLowerCase(), pattern)
+  })
+  ret.sort((a, b) => {
+    const aRank =
+      a.url.toLowerCase().includes(pattern) ||
+      a.title.toLowerCase().includes(pattern)
+    const bRank =
+      b.url.toLowerCase().includes(pattern) ||
+      b.title.toLowerCase().includes(pattern)
+    if (aRank === bRank) {
+      return 0
+    }
+    if (aRank) {
+      return -1
+    }
+    return 1
+  })
+  return ret
+}
 
 // distilled from https://gist.github.com/mdwheele/7171422
 function fuzzyMatch(haystack, needle) {
