@@ -29,6 +29,9 @@ import { folderByName } from '../../helpers/folders'
 import xorWith from 'lodash/xorWith'
 import isEqual from 'lodash/isEqual'
 import isEmpty from 'lodash/isEmpty'
+import chunk from 'lodash/chunk'
+import { FixedSizeList as List } from 'react-window';
+import AutoSizer from "react-virtualized-auto-sizer";
 
 class HomePage extends React.Component {
   constructor(props) {
@@ -175,17 +178,34 @@ class BookmarkCards extends React.Component {
   }
   render() {
     const listing = this.props.listing
-    return <Row key={'homePageRow0'}>
-      {listing.map((v) => {
-        return <Cell columns={4} key={'bookmarkCard-cell-' + v.id}>
-          <BookmarkCard
-            key={'bookmarkCard' + v.id}
-            card={v}
-            markAsRead={(e) => { this.props.markAsRead(e, v.id) }}
-            deleteDialog={(e) => { this.props.deleteDialog(e, v) }} />
-        </Cell>
-      })}
-    </Row>
+    const totalRows = Math.ceil(listing.length / 3)
+    const rows = chunk(listing, 3).map(
+      (cells, i) =>
+        (style) =>
+          <Row key={'homePageRow' + i} style={style}>
+            {cells.map((v) => <Cell columns={4} key={'bookmarkCard-cell-' + v.id}>
+              <BookmarkCard
+                key={'bookmarkCard' + v.id}
+                card={v}
+                markAsRead={(e) => { this.props.markAsRead(e, v.id) }}
+                deleteDialog={(e) => { this.props.deleteDialog(e, v) }} />
+            </Cell>)}
+          </Row>
+    )
+    return <div className='bookmark-cards-container'><AutoSizer>
+      {({ height, width }) => (
+        <List
+          height={height}
+          itemCount={totalRows}
+          itemSize={140}
+          width={width}
+        >
+          {({ index, style }) => {
+            return rows[index](style)
+          }}
+        </List>
+      )}
+    </AutoSizer></div>
   }
 }
 
