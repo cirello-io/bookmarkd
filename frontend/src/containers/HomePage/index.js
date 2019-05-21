@@ -19,7 +19,6 @@ import Dialog, { DialogTitle, DialogContent, DialogFooter, DialogButton } from '
 import Fab from '@material/react-fab'
 import MaterialIcon from '@material/react-material-icon'
 import React from 'react'
-import TextField, { Input } from '@material/react-text-field';
 import moment from 'moment'
 import { Cell, Grid, Row } from '@material/react-layout-grid'
 import { Headline6, Caption } from '@material/react-typography'
@@ -108,7 +107,7 @@ class HomePage extends React.Component {
         : null}
 
       <Grid key={'homePageRoot'} className='home-page-root'>
-        <SearchBox />
+
         <BookmarkCards
           listing={this.props.filteredBookmarks}
           markAsRead={this.markAsRead}
@@ -130,39 +129,7 @@ function s2p(state) {
 
 export default connect(s2p, null)(HomePage)
 
-const SearchBox = connect(() => ({}), null)(class extends React.PureComponent {
-  constructor(props) {
-    super(props)
-    this.state = {
-      fuzzySearch: ''
-    }
-    this.filterBy = this.filterBy.bind(this)
-  }
 
-  filterBy(v) {
-    this.setState({ fuzzySearch: v }, () => {
-      this.props.dispatch({ type: 'TRIGGER_FUZZY_SEARCH', fuzzySearch: v })
-    })
-  }
-
-  render() {
-    return <Row key={'searchBarRow'} className='searchbar-row'>
-      <Cell columns={3} key={'searchBarLeftPadding'} />
-      <Cell columns={6}>
-        <TextField
-          fullWidth
-          label='search'
-          onTrailingIconSelect={() => this.filterBy('')}
-          trailingIcon={<MaterialIcon role="button" icon="delete" />} >
-          <Input
-            value={this.state.fuzzySearch}
-            onChange={(e) => this.filterBy(e.currentTarget.value)} />
-        </TextField>
-      </Cell>
-      <Cell columns={3} key={'searchBarRightPadding'} />
-    </Row>
-  }
-})
 
 class BookmarkCards extends React.Component {
   render() {

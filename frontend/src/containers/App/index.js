@@ -15,8 +15,6 @@
 import React from 'react'
 import MaterialIcon from '@material/react-material-icon'
 import TopAppBar, { TopAppBarFixedAdjust, TopAppBarIcon, TopAppBarRow, TopAppBarSection, TopAppBarTitle } from '@material/react-top-app-bar'
-import Drawer, { DrawerContent } from '@material/react-drawer'
-import List, { ListItem, ListItemText, ListItemGraphic, ListItemMeta } from '@material/react-list'
 import { Route, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import HomePage from '../HomePage'
@@ -26,6 +24,7 @@ import LinearProgress from '@material/react-linear-progress';
 import { folderByName } from '../../helpers/folders'
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
+import TextField, { Input } from '@material/react-text-field';
 
 class App extends React.Component {
   constructor(props) {
@@ -43,6 +42,11 @@ class App extends React.Component {
         <TopAppBarRow>
           <TopAppBarSection align='start'>
             <TopAppBarTitle>Bookmarks Manager</TopAppBarTitle>
+          </TopAppBarSection>
+          <TopAppBarSection align='end'>
+            <TopAppBarTitle>
+              <SearchBox />
+            </TopAppBarTitle>
           </TopAppBarSection>
         </TopAppBarRow>
       </TopAppBar>
@@ -84,3 +88,34 @@ export default withRouter(connect(
         : ''
     }
   }, null)(App))
+
+const SearchBox = connect(() => ({}), null)(class extends React.PureComponent {
+  constructor(props) {
+    super(props)
+    this.state = {
+      fuzzySearch: ''
+    }
+    this.filterBy = this.filterBy.bind(this)
+  }
+
+  filterBy(v) {
+    this.setState({ fuzzySearch: v }, () => {
+      this.props.dispatch({ type: 'TRIGGER_FUZZY_SEARCH', fuzzySearch: v })
+    })
+  }
+
+  render() {
+    return <TextField
+      className='search-box'
+      fullWidth
+      label='search'
+      onTrailingIconSelect={() => this.filterBy('')}
+      leadingIcon={<MaterialIcon role='button' icon='search' />}
+      trailingIcon={<MaterialIcon role='button' icon='delete' />} >
+      <Input
+        style={{ paddingLeft: 40, paddingRight: 40 }}
+        value={this.state.fuzzySearch}
+        onChange={(e) => this.filterBy(e.currentTarget.value)} />
+    </TextField>
+  }
+})
