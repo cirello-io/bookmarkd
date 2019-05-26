@@ -3,7 +3,7 @@ module cirello.io/bookmarkd
 require (
 	cirello.io/errors v1.0.0
 	cirello.io/svc v0.0.0-20190102181731-2414c48a9a74
-	github.com/PuerkitoBio/goquery v1.4.1
+	github.com/PuerkitoBio/goquery v1.5.0
 	github.com/andybalholm/cascadia v1.0.0 // indirect
 	github.com/auth0/go-jwt-middleware v0.0.0-20170425171159-5493cabe49f7
 	github.com/codegangsta/negroni v0.3.0 // indirect
@@ -12,9 +12,9 @@ require (
 	github.com/emersion/go-smtp v0.9.0
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2 // indirect
-	github.com/gorilla/websocket v1.2.0
+	github.com/gorilla/websocket v1.4.0
 	github.com/jmoiron/sqlx v0.0.0-20180614180643-0dae4fefe7c0
-	github.com/mattn/go-sqlite3 v1.9.0
+	github.com/mattn/go-sqlite3 v1.10.0
 	golang.org/x/net v0.0.0-20181220203305-927f97764cc3 // indirect
 	golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f
 	gopkg.in/urfave/cli.v1 v1.20.0
