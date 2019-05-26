@@ -12,7 +12,7 @@ require (
 	github.com/emersion/go-smtp v0.9.0
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2 // indirect
-	github.com/gorilla/websocket v1.2.0
+	github.com/gorilla/websocket v1.4.0
 	github.com/jmoiron/sqlx v0.0.0-20180614180643-0dae4fefe7c0
 	github.com/mattn/go-sqlite3 v1.10.0
 	golang.org/x/net v0.0.0-20181220203305-927f97764cc3 // indirect
