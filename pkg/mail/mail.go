@@ -42,43 +42,55 @@ type backend struct {
 	pubsub    *pubsub.Broker
 }
 
-func (b *backend) Login(username, password string) (smtp.User, error) {
+func (b *backend) Login(_ *smtp.ConnectionState, username, password string) (smtp.Session, error) {
 	return nil, errors.New("bad credentials")
 }
 
-func (b *backend) AnonymousLogin() (smtp.User, error) {
-	return &user{backend: b}, nil
+func (b *backend) AnonymousLogin(_ *smtp.ConnectionState) (smtp.Session, error) {
+	return &session{backend: b}, nil
 }
 
-type user struct {
-	backend *backend
+type session struct {
+	from, to string
+	backend  *backend
 }
 
-func (u *user) Send(from string, to []string, r io.Reader) error {
-	if !u.isValidOrigin(from, to) {
+func (u *session) Mail(from string) error {
+	u.from = from
+	return nil
+}
+func (u *session) Rcpt(to string) error {
+	u.to = to
+	return nil
+}
+
+func (u *session) Data(r io.Reader) error {
+	if !u.isValidOrigin() {
 		return nil
 	}
 	u.extractLink(r)
 	return nil
 }
 
-func (u *user) Logout() error {
+func (u *session) Reset() {}
+
+func (u *session) Logout() error {
 	return nil
 }
 
-func (u *user) isValidOrigin(from string, to []string) bool {
-	if from != u.backend.sender {
-		log.Println("acceptable sender not found:", from)
+func (u *session) isValidOrigin() bool {
+	if u.from != u.backend.sender {
+		log.Println("acceptable sender not found:", u.from)
 		return false
 	}
-	if len(to) != 1 && to[0] != u.backend.recipient {
-		log.Println("bad recipient", to)
+	if u.to != u.backend.recipient {
+		log.Println("bad recipient", u.to)
 		return false
 	}
 	return true
 }
 
-func (u *user) extractLink(r io.Reader) {
+func (u *session) extractLink(r io.Reader) {
 	m, err := mail.ReadMessage(r)
 	if err != nil {
 		log.Println("cannot read email:", err)
@@ -151,7 +163,8 @@ func Run(l net.Listener, db *sqlx.DB, broker *pubsub.Broker, domain, sender, rec
 	s := smtp.NewServer(be)
 	s.Addr = l.Addr().String()
 	s.Domain = domain
-	s.MaxIdleSeconds = 300
+	s.ReadTimeout = 300 * time.Second
+	s.WriteTimeout = 300 * time.Second
 	s.MaxMessageBytes = 2 * 1024 * 1024
 	s.MaxRecipients = 1
 	s.AllowInsecureAuth = true
