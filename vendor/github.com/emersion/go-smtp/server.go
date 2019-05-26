@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"sync"
+	"time"
 
 	"github.com/emersion/go-sasl"
 )
@@ -27,11 +28,12 @@ type Server struct {
 
 	Domain            string
 	MaxRecipients     int
-	MaxIdleSeconds    int
 	MaxMessageBytes   int
 	AllowInsecureAuth bool
 	Strict            bool
 	Debug             io.Writer
+	ReadTimeout       time.Duration
+	WriteTimeout      time.Duration
 
 	// If set, the AUTH command will not be advertised and authentication
 	// attempts will be rejected. This setting overrides AllowInsecureAuth.
@@ -52,7 +54,7 @@ type Server struct {
 func NewServer(be Backend) *Server {
 	return &Server{
 		Backend: be,
-		caps:    []string{"PIPELINING", "8BITMIME"},
+		caps:    []string{"PIPELINING", "8BITMIME", "ENHANCEDSTATUSCODES"},
 		auths: map[string]SaslServerFactory{
 			sasl.Plain: func(conn *Conn) sasl.Server {
 				return sasl.NewPlainServer(func(identity, username, password string) error {
@@ -60,12 +62,13 @@ func NewServer(be Backend) *Server {
 						return errors.New("Identities not supported")
 					}
 
-					user, err := be.Login(username, password)
+					state := conn.State()
+					session, err := be.Login(&state, username, password)
 					if err != nil {
 						return err
 					}
 
-					conn.SetUser(user)
+					conn.SetSession(session)
 					return nil
 				})
 			},
@@ -110,7 +113,7 @@ func (s *Server) handleConn(c *Conn) error {
 			cmd, arg, err := parseCmd(line)
 			if err != nil {
 				c.nbrErrors++
-				c.WriteResponse(501, "Bad command")
+				c.WriteResponse(501, EnhancedCode{5, 5, 2}, "Bad command")
 				continue
 			}
 
@@ -121,11 +124,11 @@ func (s *Server) handleConn(c *Conn) error {
 			}
 
 			if neterr, ok := err.(net.Error); ok && neterr.Timeout() {
-				c.WriteResponse(221, "Idle timeout, bye bye")
+				c.WriteResponse(221, EnhancedCode{2, 4, 2}, "Idle timeout, bye bye")
 				return nil
 			}
 
-			c.WriteResponse(221, "Connection error, sorry")
+			c.WriteResponse(221, EnhancedCode{2, 4, 0}, "Connection error, sorry")
 			return err
 		}
 	}
