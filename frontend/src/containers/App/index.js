@@ -15,7 +15,7 @@
 import React from 'react'
 import MaterialIcon from '@material/react-material-icon'
 import TopAppBar, { TopAppBarFixedAdjust, TopAppBarIcon, TopAppBarRow, TopAppBarSection, TopAppBarTitle } from '@material/react-top-app-bar'
-import { Route, withRouter } from 'react-router-dom'
+import { BrowserRouter as Router, Route, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import HomePage from '../HomePage'
 import PostPage from '../PostPage'
@@ -58,8 +58,10 @@ class App extends React.Component {
           <Tab> <span className='mdc-tab__text-label'>Duplicated {/* <span>{this.props.duplicatedCount}</span> */} </span> </Tab>
           <Tab> <span className='mdc-tab__text-label'>All {/* <span>{this.props.totalCount}</span> */} </span> </Tab>
         </TabBar>
-        <Route exact path='/'> <HomePage /> </Route>
-        <Route path='/post' component={PostPage} />
+        <Router>
+          <Route exact path='/'> <HomePage /> </Route>
+          <Route path='/post' component={PostPage} />
+        </Router>
       </TopAppBarFixedAdjust>
     </div>
   }
