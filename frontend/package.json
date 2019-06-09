@@ -31,7 +31,7 @@
     "react-dom": "^16.8.6",
     "react-on-screen": "^2.1.1",
     "react-redux": "^7.0.3",
-    "react-router": "^5.0.0",
+    "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
     "reconnectingwebsocket": "^1.0.0",
