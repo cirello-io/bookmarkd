@@ -15,7 +15,7 @@
 import React from 'react'
 import MaterialIcon from '@material/react-material-icon'
 import TopAppBar, { TopAppBarFixedAdjust, TopAppBarIcon, TopAppBarRow, TopAppBarSection, TopAppBarTitle } from '@material/react-top-app-bar'
-import { BrowserRouter as Router, Route, withRouter } from 'react-router-dom'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 import { connect } from 'react-redux'
 import HomePage from '../HomePage'
 import PostPage from '../PostPage'
@@ -67,7 +67,7 @@ class App extends React.Component {
   }
 }
 
-export default withRouter(connect(
+export default connect(
   (state) => {
     return {
       loaded: state.bookmarks.loaded,
@@ -89,7 +89,7 @@ export default withRouter(connect(
           : ''
         : ''
     }
-  }, null)(App))
+  }, null)(App)
 
 const SearchBox = connect(() => ({}), null)(class extends React.PureComponent {
   constructor(props) {
