@@ -14,7 +14,7 @@
 
 import React from 'react'
 import MaterialIcon from '@material/react-material-icon'
-import TopAppBar, { TopAppBarFixedAdjust, TopAppBarIcon, TopAppBarRow, TopAppBarSection, TopAppBarTitle } from '@material/react-top-app-bar'
+import TopAppBar, { TopAppBarFixedAdjust, TopAppBarRow, TopAppBarSection, TopAppBarTitle } from '@material/react-top-app-bar'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import { connect } from 'react-redux'
 import HomePage from '../HomePage'
