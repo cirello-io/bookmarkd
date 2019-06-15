@@ -55,7 +55,12 @@ class App extends React.Component {
         <TabBar activeIndex={this.props.selectedIndex} handleActiveIndexUpdate={this.handleSelect}>
           <Tab> <span className='mdc-tab__text-label'>Bookmarks {/* <span>{this.props.bookmarkCount}</span> */} </span> </Tab>
           <Tab> <span className='mdc-tab__text-label'>Pending {/* <span>{this.props.pendingCount}</span> */} </span> </Tab>
-          <Tab> <span className='mdc-tab__text-label'>Duplicated {/* <span>{this.props.duplicatedCount}</span> */} </span> </Tab>
+          <Tab> <span className='mdc-tab__text-label'>
+            {this.props.duplicatedCount
+              ? <strong>Duplicated ({this.props.duplicatedCount})</strong>
+              : 'Duplicated'
+            }
+          </span> </Tab>
           <Tab> <span className='mdc-tab__text-label'>All {/* <span>{this.props.totalCount}</span> */} </span> </Tab>
         </TabBar>
         <Router>
