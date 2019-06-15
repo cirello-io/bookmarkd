@@ -13,7 +13,7 @@
     "@material/react-icon-button": "^0.13.0",
     "@material/react-layout-grid": "^0.13.0",
     "@material/react-linear-progress": "^0.13.0",
-    "@material/react-list": "^0.13.0",
+    "@material/react-list": "^0.13.2",
     "@material/react-material-icon": "^0.13.0",
     "@material/react-tab": "^0.13.0",
     "@material/react-tab-bar": "^0.13.0",
