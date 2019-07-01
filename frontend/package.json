@@ -19,7 +19,7 @@
     "@material/react-tab-bar": "^0.13.0",
     "@material/react-tab-indicator": "^0.13.0",
     "@material/react-tab-scroller": "^0.14.0",
-    "@material/react-text-field": "^0.13.0",
+    "@material/react-text-field": "^0.14.0",
     "@material/react-top-app-bar": "^0.14.0",
     "@material/react-typography": "^0.14.0",
     "connected-react-router": "^6.4.0",
