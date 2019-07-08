@@ -10,7 +10,7 @@
     "@material/react-dialog": "^0.14.0",
     "@material/react-drawer": "^0.14.1",
     "@material/react-fab": "^0.14.1",
-    "@material/react-icon-button": "^0.13.0",
+    "@material/react-icon-button": "^0.14.1",
     "@material/react-layout-grid": "^0.14.1",
     "@material/react-linear-progress": "^0.14.1",
     "@material/react-list": "^0.14.1",
