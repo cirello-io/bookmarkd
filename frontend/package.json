@@ -15,7 +15,7 @@
     "@material/react-linear-progress": "^0.14.1",
     "@material/react-list": "^0.14.1",
     "@material/react-material-icon": "^0.13.0",
-    "@material/react-tab": "^0.14.0",
+    "@material/react-tab": "^0.14.1",
     "@material/react-tab-bar": "^0.14.1",
     "@material/react-tab-indicator": "^0.14.1",
     "@material/react-tab-scroller": "^0.14.0",
