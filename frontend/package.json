@@ -22,7 +22,7 @@
     "@material/react-text-field": "^0.14.0",
     "@material/react-top-app-bar": "^0.14.1",
     "@material/react-typography": "^0.14.1",
-    "connected-react-router": "^6.4.0",
+    "connected-react-router": "^6.5.0",
     "history": "^4.9.0",
     "lodash": "^4.17.13",
     "moment": "^2.24.0",
