@@ -18,7 +18,7 @@
     "@material/react-tab": "^0.14.1",
     "@material/react-tab-bar": "^0.14.1",
     "@material/react-tab-indicator": "^0.15.0",
-    "@material/react-tab-scroller": "^0.14.1",
+    "@material/react-tab-scroller": "^0.15.0",
     "@material/react-text-field": "^0.14.1",
     "@material/react-top-app-bar": "^0.14.1",
     "@material/react-typography": "^0.15.0",
