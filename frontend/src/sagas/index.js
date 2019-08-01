@@ -44,6 +44,16 @@ function* markBookmarkAsRead(action) {
   })
 }
 
+function* markBookmarkAsPostpone(action) {
+  yield fetch(cfg.http + '/markBookmarkAsPostpone', {
+    method: 'POST',
+    body: JSON.stringify({ id: action.id }),
+    credentials: 'same-origin'
+  }).then(response => response.json()).catch((e) => {
+    console.log('cannot mark bookmark as postpone:', e)
+  })
+}
+
 function* addBookmark(action) {
   yield fetch(cfg.http + '/newBookmark', {
     method: 'POST',
@@ -68,6 +78,7 @@ function* linkWatcher() {
   yield takeLatest('INITIAL_LOAD_START', initialDataload)
   yield takeLeading('DELETE_BOOKMARK', deleteBookmark)
   yield takeLeading('MARK_BOOKMARK_AS_READ', markBookmarkAsRead)
+  yield takeLeading('MARK_BOOKMARK_AS_POSTPONE', markBookmarkAsPostpone)
   yield takeLeading('ADD_BOOKMARK', addBookmark)
   yield takeLatest('LOAD_BOOKMARK', loadBookmark)
 }

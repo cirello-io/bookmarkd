@@ -40,6 +40,7 @@ class HomePage extends React.Component {
     this.deleteAction = this.deleteAction.bind(this)
     this.addNewBookmark = this.addNewBookmark.bind(this)
     this.markAsRead = this.markAsRead.bind(this)
+    this.markAsPostpone = this.markAsPostpone.bind(this)
   }
 
   componentDidMount() {
@@ -61,6 +62,11 @@ class HomePage extends React.Component {
   markAsRead(e, id) {
     e.preventDefault()
     this.props.dispatch({ type: 'MARK_BOOKMARK_AS_READ', id })
+  }
+
+  markAsPostpone(e, id) {
+    e.preventDefault()
+    this.props.dispatch({ type: 'MARK_BOOKMARK_AS_POSTPONE', id })
   }
 
   addNewBookmark() {
@@ -111,6 +117,7 @@ class HomePage extends React.Component {
         <BookmarkCards
           listing={this.props.filteredBookmarks}
           markAsRead={this.markAsRead}
+          markAsPostpone={this.markAsPostpone}
           deleteDialog={this.deleteDialog} />
       </Grid>
       <Fab key={'addLink'} className='addNewBookmark' icon={
@@ -141,6 +148,7 @@ class BookmarkCards extends React.Component {
             index={index}
             cells={cells}
             markAsRead={this.props.markAsRead}
+            markAsPostpone={this.props.markAsPostpone}
             deleteDialog={this.props.deleteDialog}
           />
         </TrackVisibility>
@@ -149,13 +157,14 @@ class BookmarkCards extends React.Component {
   }
 }
 
-function BookmarkCardsRow({ index, cells, isVisible, markAsRead, deleteDialog }) {
+function BookmarkCardsRow({ index, cells, isVisible, markAsRead, markAsPostpone, deleteDialog }) {
   return <Row key={'homePageRow' + index} style={{ visibility: !isVisible ? 'hidden' : '' }}>
     {cells.map((v) => <Cell columns={4} key={'bookmarkCard-cell-' + v.id}>
       <BookmarkCard
         key={'bookmarkCard' + v.id}
         card={v}
         markAsRead={(e) => { markAsRead(e, v.id) }}
+        markAsPostpone={(e) => { markAsPostpone(e, v.id) }}
         deleteDialog={(e) => { deleteDialog(e, v) }} />
     </Cell>)}
   </Row>
@@ -188,9 +197,14 @@ function BookmarkCard(props) {
       </CardActionButtons>
       <CardActionIcons>
         {card.inbox
-          ? <MaterialIcon
-            icon='visibility'
-            onClick={props.markAsRead} />
+          ? [
+            <MaterialIcon
+              icon='visibility'
+              onClick={props.markAsRead} />,
+            <MaterialIcon
+              icon='schedule'
+              onClick={props.markAsPostpone} />
+          ]
           : <div />}
         <MaterialIcon
           icon='remove'

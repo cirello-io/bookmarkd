@@ -68,7 +68,7 @@ func (b *bookmarkDAO) Bootstrap() error {
 			last_status_reason text,
 			title bigtext not null,
 			created_at datetime not null,
-			inbox bool not null default false
+			inbox int not null default 0
 		);
 		`,
 		`create index if not exists bookmarks_last_status_code  on bookmarks (last_status_code)`,

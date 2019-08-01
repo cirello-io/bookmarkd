@@ -17,14 +17,14 @@ export const folders = {
     selectedIndex: 0,
     name: 'bookmarks',
     filter: (bookmarks) => {
-      return bookmarks.filter((v) => !v.inbox)
+      return bookmarks.filter((v) => v.inbox === 0)
     }
   },
   1: {
     selectedIndex: 1,
     name: 'pending',
     filter: (bookmarks) => {
-      return bookmarks.filter((v) => v.inbox)
+      return bookmarks.filter((v) => v.inbox !== 0).sort((a, b) => a.inbox < b.inbox)
     }
   },
   2: {

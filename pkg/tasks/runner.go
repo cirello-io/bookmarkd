@@ -39,6 +39,7 @@ var execGroup singleflight.Group
 var tasks = []Task{
 	{"check link health", LinkHealth, 6 * time.Hour},
 	{"vacuum", Vacuum, 24 * time.Hour},
+	{"restore postponed links", RestorePostponedLinks, 24 * time.Hour},
 }
 
 // Run executes background maintenance tasks.
@@ -119,4 +120,16 @@ func Vacuum(db *sqlx.DB) (err error) {
 
 	_, err = db.Exec("VACUUM")
 	return errors.E(err, "cannot run vacuum")
+}
+
+// RestorePostponedLinks revamp rescheduled links in the inbox.
+func RestorePostponedLinks(db *sqlx.DB) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = errors.E(errors.Internal, r)
+		}
+	}()
+
+	_, err = db.Exec("UPDATE bookmarks SET inbox = 1 WHERE inbox = 2")
+	return errors.E(err, "cannot run restore rescheduled links")
 }
