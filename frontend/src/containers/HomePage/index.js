@@ -199,9 +199,11 @@ function BookmarkCard(props) {
         {card.inbox
           ? [
             <MaterialIcon
+              key='markAsRead'
               icon='visibility'
               onClick={props.markAsRead} />,
             <MaterialIcon
+              key='markAsPostpone'
               icon='schedule'
               onClick={props.markAsPostpone} />
           ]
