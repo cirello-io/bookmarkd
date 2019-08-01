@@ -24,7 +24,7 @@ export const folders = {
     selectedIndex: 1,
     name: 'pending',
     filter: (bookmarks) => {
-      return bookmarks.filter((v) => v.inbox !== 0).sort((a, b) => a.inbox < b.inbox)
+      return bookmarks.filter((v) => v.inbox !== 0)
     }
   },
   2: {

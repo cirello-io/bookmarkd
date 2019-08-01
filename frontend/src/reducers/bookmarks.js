@@ -48,6 +48,8 @@ function reducer(state = initialState, action) {
         }
       }
       ret.filteredBookmarks = ret.folder.filter(ret.bookmarks)
+      ret.bookmarks.sort((a, b) => a.inbox - b.inbox)
+      ret.filteredBookmarks.sort((a, b) => a.inbox - b.inbox)
       return ret
     }
     case 'FUZZY_SEARCH': {
@@ -80,6 +82,8 @@ function reducer(state = initialState, action) {
       var filteredBookmarks = state.filteredBookmarks.slice().map((v) => {
         return v.id === action.bookmark.id ? action.bookmark : v
       })
+      bookmarks.sort((a, b) => a.inbox - b.inbox)
+      filteredBookmarks.sort((a, b) => a.inbox - b.inbox)
       return {
         ...state,
         bookmark: action.bookmark,
@@ -137,6 +141,7 @@ function fuzzySearch(list, pattern) {
     }
     return 1
   })
+  ret.sort((a, b) => a.inbox - b.inbox)
   return ret
 }
 
