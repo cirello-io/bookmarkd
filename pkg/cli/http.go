@@ -27,7 +27,7 @@ import (
 	"cirello.io/bookmarkd/pkg/tasks"
 	"cirello.io/bookmarkd/pkg/web"
 	"cirello.io/errors"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 func (c *commands) httpMode() cli.Command {

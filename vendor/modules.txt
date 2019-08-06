@@ -12,23 +12,23 @@ github.com/auth0/go-jwt-middleware
 github.com/dgrijalva/jwt-go
 # github.com/elazarl/go-bindata-assetfs v1.0.0
 github.com/elazarl/go-bindata-assetfs
-# github.com/emersion/go-sasl v0.0.0-20190520160400-47d427600317
+# github.com/emersion/go-sasl v0.0.0-20190704090222-36b50694675c
 github.com/emersion/go-sasl
-# github.com/emersion/go-smtp v0.11.1
+# github.com/emersion/go-smtp v0.11.2
 github.com/emersion/go-smtp
 # github.com/gorilla/websocket v1.4.0
 github.com/gorilla/websocket
 # github.com/jmoiron/sqlx v0.0.0-20180614180643-0dae4fefe7c0
 github.com/jmoiron/sqlx
 github.com/jmoiron/sqlx/reflectx
-# github.com/mattn/go-sqlite3 v1.10.0
+# github.com/mattn/go-sqlite3 v1.11.0
 github.com/mattn/go-sqlite3
-# golang.org/x/net v0.0.0-20181220203305-927f97764cc3
+# github.com/urfave/cli v1.21.0
+github.com/urfave/cli
+# golang.org/x/net v0.0.0-20190603091049-60506f45cf65
 golang.org/x/net/html
 golang.org/x/net/html/atom
-# golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f
+# golang.org/x/sync v0.0.0-20190423024810-112230192c58
 golang.org/x/sync/singleflight
-# gopkg.in/urfave/cli.v1 v1.20.0
-gopkg.in/urfave/cli.v1
 # mvdan.cc/xurls/v2 v2.0.0
 mvdan.cc/xurls/v2

@@ -19,7 +19,7 @@ import (
 
 	"cirello.io/bookmarkd/pkg/actions"
 	"cirello.io/errors"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 func (c *commands) listBookmarks() cli.Command {

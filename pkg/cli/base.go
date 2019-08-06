@@ -23,7 +23,7 @@ import (
 	"cirello.io/errors"
 	"cirello.io/bookmarkd/pkg/models"
 	"github.com/jmoiron/sqlx"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 type commands struct {
