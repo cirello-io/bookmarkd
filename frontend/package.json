@@ -23,7 +23,7 @@
     "@material/react-top-app-bar": "^0.15.0",
     "@material/react-typography": "^0.15.0",
     "connected-react-router": "^6.5.2",
-    "history": "^4.9.0",
+    "history": "^4.10.1",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "node-sass": "^4.12.0",
