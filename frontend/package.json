@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material/card": "^3.1.0",
+    "@material/card": "^3.2.0",
     "@material/react-button": "^0.15.0",
     "@material/react-card": "^0.15.0",
     "@material/react-chips": "^0.15.0",
