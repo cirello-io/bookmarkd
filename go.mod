@@ -6,7 +6,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.0
 	github.com/auth0/go-jwt-middleware v0.0.0-20170425171159-5493cabe49f7
 	github.com/codegangsta/negroni v0.3.0 // indirect
-	github.com/dgrijalva/jwt-go v0.0.0-20180309000000-06ea1031745c
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/elazarl/go-bindata-assetfs v1.0.0
 	github.com/emersion/go-smtp v0.11.2
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
@@ -22,3 +22,5 @@ require (
 	google.golang.org/appengine v1.6.1 // indirect
 	mvdan.cc/xurls/v2 v2.1.0
 )
+
+go 1.13
