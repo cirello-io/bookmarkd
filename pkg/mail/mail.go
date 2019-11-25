@@ -55,7 +55,7 @@ type session struct {
 	backend  *backend
 }
 
-func (u *session) Mail(from string) error {
+func (u *session) Mail(from string, mailOpts smtp.MailOptions) error {
 	u.from = from
 	return nil
 }
