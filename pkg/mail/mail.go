@@ -80,11 +80,11 @@ func (u *session) Logout() error {
 
 func (u *session) isValidOrigin() bool {
 	if u.from != u.backend.sender {
-		log.Println("acceptable sender not found:", u.from)
+		log.Println("acceptable sender not found:", u.from, "(", u.to, ")")
 		return false
 	}
 	if u.to != u.backend.recipient {
-		log.Println("bad recipient", u.to)
+		log.Println("bad recipient", u.to, "(", u.from, ")")
 		return false
 	}
 	return true
