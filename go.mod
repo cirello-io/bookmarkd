@@ -20,7 +20,7 @@ require (
 	github.com/urfave/cli v1.22.4
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	google.golang.org/appengine v1.6.1 // indirect
-	mvdan.cc/xurls/v2 v2.1.0
+	mvdan.cc/xurls/v2 v2.2.0
 )
 
 go 1.13
