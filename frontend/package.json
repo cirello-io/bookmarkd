@@ -27,7 +27,7 @@
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "node-sass": "^4.14.1",
-    "react": "^16.13.1",
+    "react": "^16.14.0",
     "react-dom": "^16.13.1",
     "react-on-screen": "^2.1.1",
     "react-redux": "^7.2.1",
