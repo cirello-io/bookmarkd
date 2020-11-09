@@ -17,7 +17,7 @@ require (
 	github.com/lib/pq v1.2.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.4
 	github.com/smartystreets/goconvey v0.0.0-20190731233626-505e41936337 // indirect
-	github.com/urfave/cli v1.22.4
+	github.com/urfave/cli v1.22.5
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	google.golang.org/appengine v1.6.1 // indirect
 	mvdan.cc/xurls/v2 v2.2.0
