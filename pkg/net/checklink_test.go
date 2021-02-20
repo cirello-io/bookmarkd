@@ -68,7 +68,7 @@ func TestCheckLink(t *testing.T) {
 			&models.Bookmark{
 				URL:              "invalid-url",
 				LastStatusCode:   0,
-				LastStatusReason: "Get invalid-url: unsupported protocol scheme \"\"",
+				LastStatusReason: "Get \"invalid-url\": unsupported protocol scheme \"\"",
 				LastStatusCheck:  now().Unix(),
 			},
 		},
